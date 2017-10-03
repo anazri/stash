@@ -5,8 +5,8 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 
 public interface ApplicationDao {
 
-    @SqlQuery("select * from payment.transactions where id = :transactionId")
+    @SqlQuery("select application_name from applications where id = :applicationId")
     String findById(
-        @Bind("transactionId") int transactionId
+        @Bind("applicationId") String applicationId
     );
 }

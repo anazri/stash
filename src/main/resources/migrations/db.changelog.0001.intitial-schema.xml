@@ -7,7 +7,7 @@
     <changeSet id="1" author="Gabor Pinter">
         <sql>create schema payment</sql>
         <!-- Transactions -->
-        <createTable tableName="applications" schemaName="stash">
+        <createTable tableName="applications">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>

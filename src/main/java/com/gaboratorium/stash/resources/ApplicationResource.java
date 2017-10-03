@@ -19,7 +19,8 @@ public class ApplicationResource {
 
     @GET
     public String sayHello() {
-        String myApplication = applicationDao.findById(1);
+        final String applicationId = "1";
+        final String myApplication = applicationDao.findById(applicationId);
         return "Hello stranger! Welcome to " + stashApplicationName + "/" + myApplication;
     }
 }

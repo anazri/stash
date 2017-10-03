@@ -1,6 +1,6 @@
 applicationName: Stash Backend
 database:
-  url: postgresql://localhost:5432/yourdb
+  url: jdbc:postgresql://localhost:5432/yourdb
   user: yourUser
   password: yourPassword
   min_size: 8
