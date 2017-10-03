@@ -36,7 +36,6 @@ public class StashApplication extends Application<StashConfiguration> {
         runDatabaseMigrations(environment, configuration.getDatabase());
         environment.jersey().register(greeterResource);
 
-
     }
 
     private void runDatabaseMigrations(Environment environment, DataSourceFactory database) throws LiquibaseException, SQLException {
