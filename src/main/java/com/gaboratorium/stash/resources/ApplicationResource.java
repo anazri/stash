@@ -7,7 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@Path("/greeter")
+@Path("/apps")
 @Produces(MediaType.APPLICATION_JSON)
 public class ApplicationResource {
 
@@ -24,7 +24,7 @@ public class ApplicationResource {
         @Valid final CreateApplicationBody body
     ) {
         // TODO: implement
-        applicationDao.insert(body.getApplicationId(), body.getApplicationName());
+        applicationDao.insert(body.getApplicationId(), body.getApplicationName(), body.getAdminEmail());
     }
 
     @GET

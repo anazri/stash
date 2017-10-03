@@ -11,9 +11,10 @@ public interface ApplicationDao {
         @Bind("applicationId") String applicationId
     );
 
-    @SqlUpdate("insert into applications values (:applicationId, :applicationName)")
+    @SqlUpdate("insert into applications values (:applicationId, :applicationName, :adminEmail)")
     void insert(
         @Bind("applicationId") String applicationId,
-        @Bind("applicationName") String applicationName
+        @Bind("applicationName") String applicationName,
+        @Bind("adminEmail") String adminEmail
     );
 }
