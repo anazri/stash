@@ -23,8 +23,8 @@ public class ApplicationResource {
     public void createApplication(
         @Valid final CreateApplicationBody body
     ) {
-        // TODO: implement
-        applicationDao.insert(body.getApplicationId(), body.getApplicationName(), body.getAdminEmail());
+
+        applicationDao.insert(body.getAppId(), body.getAppName(), body.getAppDescription(), body.getAppSecret(), body.getMasterEmail());
     }
 
     @GET

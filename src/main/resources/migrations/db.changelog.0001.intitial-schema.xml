@@ -11,9 +11,15 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="application_name" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="application_description" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="application_secret" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="adminEmail" type="varchar(256)">
+            <column name="master_email" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

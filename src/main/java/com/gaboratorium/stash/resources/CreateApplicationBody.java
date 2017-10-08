@@ -6,25 +6,47 @@ import io.dropwizard.validation.ValidationMethod;
 // TODO: JDBI create database if not exists
 // @Data
 public class CreateApplicationBody {
-    public String getApplicationId() {
-        return applicationId;
+    public String getAppId() {
+        return appId;
     }
 
-    public String getApplicationName() {
-        return applicationName;
+    public String getAppName() {
+        return appName;
     }
 
-    public String getAdminEmail() {
-        return adminEmail;
+    public String getAppDescription() {
+        return appDescription;
     }
 
-    public String applicationId;
-    public String applicationName;
-    public String adminEmail;
-
-    @ValidationMethod(message = "Parameters cannot be null")
-    boolean isParameterListSet() {
-        return applicationId != null && applicationName != null;
+    public String getAppSecret() {
+        return appSecret;
     }
+
+    public String getMasterEmail() {
+        return masterEmail;
+    }
+
+    public String appId;
+    public String appName;
+    public String appDescription;
+    public String appSecret;
+    public String masterEmail;
+
+    @ValidationMethod(message = "Field `appId` has to be provided.")
+    boolean isApplicationIdSet() {
+        return appId != null;
+    }
+
+    @ValidationMethod(message = "Field `appSecret` has to be provided.")
+    boolean isSecretProvided() {
+        return appSecret != null;
+    }
+
+    @ValidationMethod(message = "Field `masterEmail` has to be provided.")
+    boolean isEmailProvided() {
+        return masterEmail != null;
+    }
+
+
 
 }
