@@ -23,19 +23,23 @@ public class StashApplication extends Application<StashConfiguration> {
 
     @Override
     public void initialize(Bootstrap<StashConfiguration> bootstrap) {
-
+        // Bootstrap
     }
 
     @Override
     public void run(StashConfiguration configuration, Environment environment) throws Exception {
 
-        final DBI dbi = getDBI(environment, configuration.getDatabase());
-        final ApplicationDao applicationDao = dbi.onDemand(ApplicationDao.class);
-        final ApplicationResource greeterResource = new ApplicationResource(configuration.getApplicationName(), applicationDao);
+        // Database
+        final DataSourceFactory dataSourceFactory = configuration.getDatabase();
+        final DBI dbi = getDBI(environment, dataSourceFactory);
 
-        runDatabaseMigrations(environment, configuration.getDatabase());
-        environment.jersey().register(greeterResource);
+        // Resources
+        final AppDao appDao = dbi.onDemand(AppDao.class);
+        final AppResource appResource = new AppResource(appDao);
 
+        // Configuration
+        runDatabaseMigrations(environment, dataSourceFactory);
+        environment.jersey().register(appResource);
     }
 
     private void runDatabaseMigrations(Environment environment, DataSourceFactory database) throws LiquibaseException, SQLException {

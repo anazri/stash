@@ -6,17 +6,17 @@
                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
     <changeSet id="1" author="Gabor Pinter">
         <!-- Applications -->
-        <createTable tableName="applications">
+        <createTable tableName="apps">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="application_name" type="varchar(256)">
+            <column name="app_name" type="varchar(256)">
                 <constraints/>
             </column>
-            <column name="application_description" type="varchar(256)">
+            <column name="app_description" type="varchar(256)">
                 <constraints/>
             </column>
-            <column name="application_secret" type="varchar(256)">
+            <column name="app_secret" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
             <column name="master_email" type="varchar(256)">

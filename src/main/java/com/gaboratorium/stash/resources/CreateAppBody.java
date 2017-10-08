@@ -5,7 +5,7 @@ import io.dropwizard.validation.ValidationMethod;
 // TODO: Install Lombok
 // TODO: JDBI create database if not exists
 // @Data
-public class CreateApplicationBody {
+public class CreateAppBody {
     public String getAppId() {
         return appId;
     }

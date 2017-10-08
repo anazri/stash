@@ -1,8 +1,18 @@
-# Prerequisites 
+# Application setup
+
+## Download the application
+
+The source code can be downloaded from [GitHub](https://github.com/gaboratorium/stash). The latest release 
+of the executable application (fat jar) can be also found on 
+[GitHub Stash Releases](https://github.com/gaboratorium/stash/releases).
+
+## Running the standalone application
+
+### Prerequisites
 
 - Java 8 or higher
 - PostgreSQL server
-- A configuration YAML file containing the PostgreSQL credentials
+- Create a configuration YAML file containing the PostgreSQL credentials
 
 Here is an example of a `config.yml` file: 
 
@@ -10,7 +20,7 @@ Here is an example of a `config.yml` file:
 applicationName: Stash Backend
 isAppCreationOpen: true
 database:
-  url: jdbc:postgresql://localhost:5432/yourdb 
+  url: jdbc:postgresql://localhost:5432/yourDb 
   user: yourUser
   password: yourPassword
   min_size: 8
@@ -26,16 +36,24 @@ database:
 
 ```
 
-# Download the application
+ ### Running the fat jar application
+ 
+ To start the application run the following command: 
+ `java -jar application/stash-1.0-SNAPSHOT-all.jar`. After running the application
+ we will see that an additional parameter has to be provided describing
+ our server configuration (the `YML` file we have created eariler). Depending on where our configuration (YAML) file is,
+ we can use the following command:
+ `java -jar application/stash-1.0-SNAPSHOT-all.jar server application/config.yml`.
 
-The source code can be downloaded from [GitHub](https://github.com/gaboratorium/stash). The latest release 
-of the executable application (fat jar) can be also found on 
-[GitHub Stash Releases](https://github.com/gaboratorium/stash/releases).
+After the application has succesfully connected to the Postgres server, our application
+will be available at `localhost:8080` and `localhost:8081`.
 
-# Exporting a fat jar application
+
+
+## Exporting a fat jar application
 
 If you have downloaded the source code, you can either run the application
- from your favorite IDE, or you can export the application as a **fat jar (uber jar)**
+ from your favorite IDE, or you can export the application using **Gradle** as a **fat jar (uber jar)**
 by running the following command in the root directory of the project:
  `gradle shadowJar`. If you want to make sure that you get a clean build, you can
  run `gradle clean` first to delete existing builds.
@@ -43,14 +61,14 @@ by running the following command in the root directory of the project:
  The exported `jar` will be found 
  in the `build/libs` directory. 
  
- # Running the fat jar application
+ ## Compiling the code
  
- To start the application run the following command: 
- `java -jar build/libs/stash-1.0-SNAPSHOT-all.jar`. After running the application
- we will see that an additional parameter has to be provided describing
- our server configuration (the `YML` file we have created eariler). Depending on where our configuration (YAML) file is,
- we can use the following command:
- `java -jar build/libs/stash-1.0-SNAPSHOT-all.jar server src/main/java/com/gaboratorium/stash/config.yml`.
+ In order to compile the code you need to set up some configurations in your IDE. 
+ 
+ - Download PostgreSQL JDBC Driver from its [official site](https://jdbc.postgresql.org/) and add it to the project's
+ classpath (in IntelliJ IDEA 2017.2: File > Project structure > Libraries > New project library)
+ - Enable annotation processing (in IntelliJ IDEA 2017.2: File > Settings > Build, execution, employment > Compiler >
+ Annotation processors > Enable annotation processing)
+ 
+ 
 
-After the application has succesfully connected to the Postgres server, our application
-will be available at `localhost:8080` and `localhost:8081`.
