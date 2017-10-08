@@ -1,3 +1,3 @@
 # Stash Backend
 
-This is a thesis project made for the Web Development BA program at Copenhagen School of Design & Technology.
+[You can find the documentation here.](docs/Welcome.md)

@@ -5,8 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
     <changeSet id="1" author="Gabor Pinter">
-        <sql>create schema payment</sql>
-        <!-- Transactions -->
+        <!-- Applications -->
         <createTable tableName="applications">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>

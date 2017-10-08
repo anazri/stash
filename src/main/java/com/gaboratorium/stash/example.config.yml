@@ -1,4 +1,5 @@
 applicationName: Stash Backend
+isAppCreationOpen: true
 database:
   url: jdbc:postgresql://localhost:5432/yourdb
   user: yourUser

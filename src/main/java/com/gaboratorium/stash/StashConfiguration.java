@@ -9,6 +9,12 @@ class StashConfiguration extends Configuration {
 
     @NotEmpty private String applicationName;
     public DataSourceFactory database = new DataSourceFactory();
+    public boolean isAppCreationOpen;
+
+    @JsonProperty
+    public boolean isAppCreationOpen() {
+        return isAppCreationOpen;
+    }
 
     @JsonProperty
     public String getApplicationName() {
