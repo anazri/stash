@@ -1,9 +1,7 @@
-package com.gaboratorium.stash.resources;
+package com.gaboratorium.stash.resources.apps;
 
 import io.dropwizard.validation.ValidationMethod;
 
-// TODO: Install Lombok
-// TODO: JDBI create database if not exists
 // @Data
 public class CreateAppBody {
     public String getAppId() {

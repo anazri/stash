@@ -1,13 +1,13 @@
-package com.gaboratorium.stash.resources;
+package com.gaboratorium.stash.resources.apps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.gaboratorium.stash.modules.response.StashResponse;
 import io.dropwizard.jackson.Jackson;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/apps")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -18,10 +18,23 @@ public class AppResource {
     private final AppDao appDao;
 
     @POST
-    public void createApp(
+    public Response createApp(
         @Valid final CreateAppBody body
     ) {
-        appDao.insert(body.getAppId(), body.getAppName(), body.getAppDescription(), body.getAppSecret(), body.getMasterEmail());
+        final boolean isAppIdFree = appDao.findById(body.appId) == null;
+        if (!isAppIdFree) {
+            return StashResponse.forbidden("App ID is taken, please choose another one.");
+        } else {
+           appDao.insert(
+                body.appId,
+                body.appName,
+                body.appDescription,
+                body.appSecret,
+                body.masterEmail
+            );
+
+            return StashResponse.ok("App has been succesfully registered.");
+        }
     }
 
     @GET

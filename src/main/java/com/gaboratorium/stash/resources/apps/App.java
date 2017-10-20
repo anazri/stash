@@ -1,4 +1,4 @@
-package com.gaboratorium.stash.resources;
+package com.gaboratorium.stash.resources.apps;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

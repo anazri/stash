@@ -1,4 +1,4 @@
-package com.gaboratorium.stash.resources;
+package com.gaboratorium.stash.resources.apps;
 
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
