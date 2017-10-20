@@ -25,7 +25,7 @@ public class AppResource {
         if (!isAppIdFree) {
             return StashResponse.forbidden("App ID is taken, please choose another one.");
         } else {
-           appDao.insert(
+           final App app = appDao.insert(
                 body.appId,
                 body.appName,
                 body.appDescription,
@@ -33,7 +33,7 @@ public class AppResource {
                 body.masterEmail
             );
 
-            return StashResponse.ok("App has been succesfully registered.");
+            return StashResponse.ok(app);
         }
     }
 

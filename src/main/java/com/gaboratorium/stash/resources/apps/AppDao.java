@@ -15,8 +15,9 @@ public interface AppDao {
 
     // TODO: getWithCredentials (secret, masterPassword)
 
-    @SqlUpdate("insert into apps values (:appId, :appName, :appDescription, :appSecret, :masterEmail)")
-    void insert(
+    @SqlQuery("insert into apps values (:appId, :appName, :appDescription, :appSecret, :masterEmail) returning *")
+    @Mapper(AppMapper.class)
+    App insert(
         @Bind("appId") String appId,
         @Bind("appName") String appName,
         @Bind("appDescription") String appDescription,
