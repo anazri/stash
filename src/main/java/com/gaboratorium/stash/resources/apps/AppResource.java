@@ -39,13 +39,26 @@ public class AppResource {
 
     @GET
     @Path("/{id}")
-    public String getApp(
+    public Response getApp(
         @PathParam("id") final String appId
     ) throws JsonProcessingException {
-        final App myApp = appDao.findById(appId);
-        return Jackson.newObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(myApp);
+        final App app = appDao.findById(appId);
+        final boolean isAppThere = app != null;
+        if (isAppThere) {
+            return StashResponse.ok(app);
+        } else {
+            return StashResponse.notFound("App was not found.");
+        }
     }
 
-    // TODO: @DELETE
-
+    // TODO: Evaluate if deletion was succesful
+    // TODO: Implement token validator (universal or per service (app <--> users)
+    @DELETE
+    @Path("/{id}")
+    public Response deleteApp(
+        @PathParam("id") final String appId
+    ) {
+        appDao.delete(appId);
+        return StashResponse.ok();
+    }
 }

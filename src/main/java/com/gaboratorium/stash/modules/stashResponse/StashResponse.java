@@ -10,10 +10,14 @@ public class StashResponse {
     private static ObjectMapper mapper = Jackson.newObjectMapper();
 
     // Ok
-
     public static Response ok() { return build(200); }
     public static Response ok(String message) { return build(200, message); }
     public static Response ok(Object responseObject) { return build(200, responseObject); }
+
+    // Not found
+    public static Response notFound() { return build(404); }
+    public static Response notFound(String message) { return build(404, message); }
+    public static Response notFound(Object responseObject) { return build(404, responseObject); }
 
     // Forbidden
     public static Response forbidden() { return build(403, "Forbidden"); }

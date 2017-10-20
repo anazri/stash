@@ -7,15 +7,13 @@ import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
 public interface AppDao {
 
-    @SqlQuery("select * from apps where id = :appId")
+    @SqlQuery("select * from apps where id = :appId;")
     @Mapper(AppMapper.class)
     App findById(
         @Bind("appId") String appId
     );
 
-    // TODO: getWithCredentials (secret, masterPassword)
-
-    @SqlQuery("insert into apps values (:appId, :appName, :appDescription, :appSecret, :masterEmail) returning *")
+    @SqlQuery("insert into apps values (:appId, :appName, :appDescription, :appSecret, :masterEmail) returning *;")
     @Mapper(AppMapper.class)
     App insert(
         @Bind("appId") String appId,
@@ -23,5 +21,10 @@ public interface AppDao {
         @Bind("appDescription") String appDescription,
         @Bind("appSecret") String appSecret,
         @Bind("masterEmail") String masterEmail
+    );
+
+    @SqlUpdate("delete from apps where id = :appId;")
+    void delete(
+        @Bind("appId") String appId
     );
 }
