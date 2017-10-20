@@ -1,7 +1,7 @@
 package com.gaboratorium.stash.resources.apps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.gaboratorium.stash.modules.response.StashResponse;
+import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import io.dropwizard.jackson.Jackson;
 import lombok.RequiredArgsConstructor;
 import javax.validation.Valid;

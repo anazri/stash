@@ -1,4 +1,4 @@
-package com.gaboratorium.stash.modules.response;
+package com.gaboratorium.stash.modules.stashResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
