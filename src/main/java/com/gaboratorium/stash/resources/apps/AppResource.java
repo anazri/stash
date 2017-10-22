@@ -2,7 +2,9 @@ package com.gaboratorium.stash.resources.apps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
-import io.dropwizard.jackson.Jackson;
+import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
+import com.gaboratorium.stash.resources.apps.requestBodies.AuthenticateAppRequestBody;
+import com.gaboratorium.stash.resources.apps.requestBodies.CreateAppRequestBody;
 import lombok.RequiredArgsConstructor;
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -15,19 +17,25 @@ import javax.ws.rs.core.Response;
 @RequiredArgsConstructor
 public class AppResource {
 
+    // Constructor
+
     private final AppDao appDao;
+    private final StashTokenStore appTokenStore;
+
+    // Endpoints
 
     @POST
     public Response createApp(
-        @Valid final CreateAppBody body
+        @Valid final CreateAppRequestBody body
     ) {
         final boolean isAppIdFree = appDao.findById(body.appId) == null;
         if (!isAppIdFree) {
             return StashResponse.forbidden("App ID is taken, please choose another one.");
         } else {
+           final String appName = body.appName != null ? body.appName : body.appId;
            final App app = appDao.insert(
                 body.appId,
-                body.appName,
+                appName,
                 body.appDescription,
                 body.appSecret,
                 body.masterEmail
@@ -51,14 +59,28 @@ public class AppResource {
         }
     }
 
-    // TODO: Evaluate if deletion was succesful
-    // TODO: Implement token validator (universal or per service (app <--> users)
     @DELETE
     @Path("/{id}")
     public Response deleteApp(
         @PathParam("id") final String appId
     ) {
-        appDao.delete(appId);
-        return StashResponse.ok();
+        Response deleteResponse;
+        final App app = appDao.findById(appId);
+        if (app == null) {
+            deleteResponse = StashResponse.notFound();
+        } else {
+            appDao.delete(app.getAppId());
+            deleteResponse = StashResponse.ok();
+        }
+        return deleteResponse;
+    }
+
+    @POST
+    @Path("/{id}/authenticate")
+    public Response authenticateApp(
+        @PathParam("id") final String appId,
+        @Valid final AuthenticateAppRequestBody body
+    ) {
+        return StashResponse.forbidden("Feature is in development");
     }
 }

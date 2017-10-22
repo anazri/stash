@@ -1,6 +1,6 @@
 package com.gaboratorium.stash;
 
-;
+import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.apps.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
 import io.dropwizard.Application;
@@ -9,12 +9,12 @@ import io.dropwizard.db.ManagedDataSource;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.jsonwebtoken.SignatureAlgorithm;
 import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.skife.jdbi.v2.DBI;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -35,9 +35,18 @@ public class StashApplication extends Application<StashConfiguration> {
         final DataSourceFactory dataSourceFactory = configuration.getDatabase();
         final DBI dbi = getDBI(environment, dataSourceFactory);
 
+        // Modules
+        final StashTokenStore appTokenStore = new StashTokenStore(
+            configuration.getAppsTokenStoreKey(),
+            SignatureAlgorithm.HS256
+        );
+
         // Resources
         final AppDao appDao = dbi.onDemand(AppDao.class);
-        final AppResource appResource = new AppResource(appDao);
+        final AppResource appResource = new AppResource(
+            appDao,
+            appTokenStore
+        );
 
         // Configuration
         runDatabaseMigrations(environment, dataSourceFactory);

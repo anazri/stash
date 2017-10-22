@@ -3,26 +3,20 @@ package com.gaboratorium.stash;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
+import lombok.Getter;
 import org.hibernate.validator.constraints.NotEmpty;
 
 class StashConfiguration extends Configuration {
 
-    @NotEmpty private String applicationName;
-    public DataSourceFactory database = new DataSourceFactory();
-    public boolean isAppCreationOpen;
+    @JsonProperty @Getter @NotEmpty
+    private String applicationName;
 
-    @JsonProperty
-    public boolean isAppCreationOpen() {
-        return isAppCreationOpen;
-    }
+    @JsonProperty @Getter @NotEmpty
+    private String appsTokenStoreKey;
 
-    @JsonProperty
-    public String getApplicationName() {
-        return applicationName;
-    }
+    @JsonProperty @Getter
+    private boolean isAppCreationOpen;
 
-    @JsonProperty("database")
-    public DataSourceFactory getDatabase() {
-        return database;
-    }
+    @JsonProperty @Getter
+    private DataSourceFactory database = new DataSourceFactory();
 }

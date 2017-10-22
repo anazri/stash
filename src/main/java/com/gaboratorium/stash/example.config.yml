@@ -1,16 +1,17 @@
 applicationName: Stash Backend
 isAppCreationOpen: true
+appsTokenStoreKey: verySecretTokenKeyForAppsTokenStore
 database:
   url: jdbc:postgresql://localhost:5432/yourdb
   user: yourUser
   password: yourPassword
-  min_size: 8
-  max_size: 32
-  driver_class: org.postgresql.Driver
-  max_wait_for_connection: 1s
-  validation_query: "SELECT 1"
-  check_connection_while_idle: false
-  eviction_interval: 10s
-  min_idle_time: 1 minute
+  minSize: 8
+  maxSize: 32
+  driverClass: org.postgresql.Driver
+  maxWaitForConnection: 1s
+  validationQuery: "SELECT 1"
+  checkConnectionWhileIdle: false
+  evictionInterval: 10s
+  minIdleTime: 1 minute
   properties:
-    char_set: UTF-8
+    charSet: UTF-8
