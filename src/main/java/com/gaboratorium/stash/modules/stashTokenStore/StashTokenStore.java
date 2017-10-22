@@ -3,6 +3,9 @@ package com.gaboratorium.stash.modules.stashTokenStore;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
+import java.util.Date;
+
 
 @RequiredArgsConstructor
 public class StashTokenStore {
@@ -18,6 +21,7 @@ public class StashTokenStore {
     public String create(String subject) {
         return builder
             .setSubject(subject)
+            .setExpiration(getHalfAnHourFromNow())
             .signWith(alg, key)
             .compact();
     }
@@ -29,5 +33,13 @@ public class StashTokenStore {
         } catch (SignatureException e) {
             return false;
         }
+    }
+
+    private Date getHalfAnHourFromNow() {
+        return Date.from(
+            Instant
+                .now()
+                .plusSeconds(1800)
+        );
     }
 }

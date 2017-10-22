@@ -1,4 +1,4 @@
-package com.gaboratorium.stash.resources.apps;
+package com.gaboratorium.stash.resources.apps.dao;
 
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;

@@ -1,15 +1,21 @@
 package com.gaboratorium.stash.resources.apps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
-import com.gaboratorium.stash.resources.apps.requestBodies.AuthenticateAppRequestBody;
-import com.gaboratorium.stash.resources.apps.requestBodies.CreateAppRequestBody;
+import com.gaboratorium.stash.resources.apps.dao.App;
+import com.gaboratorium.stash.resources.apps.dao.AppDao;
+import com.gaboratorium.stash.resources.apps.requests.AuthenticateAppRequestBody;
+import com.gaboratorium.stash.resources.apps.requests.CreateAppRequestBody;
+import io.dropwizard.jackson.Jackson;
 import lombok.RequiredArgsConstructor;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Observable;
 
 @Path("/apps")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -18,7 +24,7 @@ import javax.ws.rs.core.Response;
 public class AppResource {
 
     // Constructor
-
+    private final ObjectMapper mapper = Jackson.newObjectMapper();
     private final AppDao appDao;
     private final StashTokenStore appTokenStore;
 
@@ -48,16 +54,22 @@ public class AppResource {
     @GET
     @Path("/{id}")
     public Response getApp(
-        @PathParam("id") final String appId
+        @PathParam("id") final String appId,
+        @HeaderParam("X-Auth-Token") final String token
     ) throws JsonProcessingException {
+
+        final boolean isTokenValid = appTokenStore.validate(token);
+
         final App app = appDao.findById(appId);
         final boolean isAppThere = app != null;
-        if (isAppThere) {
+        if (isAppThere && isTokenValid) {
             return StashResponse.ok(app);
         } else {
             return StashResponse.notFound("App was not found.");
         }
     }
+
+    // TODO: require token in headers
 
     @DELETE
     @Path("/{id}")
@@ -81,6 +93,15 @@ public class AppResource {
         @PathParam("id") final String appId,
         @Valid final AuthenticateAppRequestBody body
     ) {
-        return StashResponse.forbidden("Feature is in development");
+        final App app = appDao.findById(appId);
+        final boolean isSecretValid = app.getAppSecret().equals(body.appSecret);
+        if (isSecretValid) {
+            final JsonNode json  = mapper
+                .createObjectNode()
+                .put("token", appTokenStore.create("this is your token"));
+            return StashResponse.ok(json);
+        } else {
+            return StashResponse.forbidden("Invalid credentials.");
+        }
     }
 }

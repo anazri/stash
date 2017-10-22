@@ -1,7 +1,7 @@
 package com.gaboratorium.stash;
 
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
-import com.gaboratorium.stash.resources.apps.AppDao;
+import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
