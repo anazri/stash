@@ -28,12 +28,15 @@ public class AppResource {
     private final AppDao appDao;
     private final StashTokenStore appTokenStore;
 
+    private final String tokenKey = "X-Auth-Token";
+
     // Endpoints
 
     @POST
     public Response createApp(
         @Valid final CreateAppRequestBody body
     ) {
+
         final boolean isAppIdFree = appDao.findById(body.appId) == null;
         if (!isAppIdFree) {
             return StashResponse.forbidden("App ID is taken, please choose another one.");
@@ -55,13 +58,13 @@ public class AppResource {
     @Path("/{id}")
     public Response getApp(
         @PathParam("id") final String appId,
-        @HeaderParam("X-Auth-Token") final String token
+        @HeaderParam(tokenKey) final String token
     ) throws JsonProcessingException {
 
         final boolean isTokenValid = appTokenStore.validate(token);
-
         final App app = appDao.findById(appId);
         final boolean isAppThere = app != null;
+
         if (isAppThere && isTokenValid) {
             return StashResponse.ok(app);
         } else {
@@ -74,17 +77,29 @@ public class AppResource {
     @DELETE
     @Path("/{id}")
     public Response deleteApp(
-        @PathParam("id") final String appId
+        @PathParam("id") final String appId,
+        @HeaderParam(tokenKey) final String token
     ) {
-        Response deleteResponse;
-        final App app = appDao.findById(appId);
-        if (app == null) {
-            deleteResponse = StashResponse.notFound();
-        } else {
-            appDao.delete(app.getAppId());
-            deleteResponse = StashResponse.ok();
-        }
-        return deleteResponse;
+        return new StashResponse()
+            .validate(response -> {
+                final String test = "asd";
+                return true;
+            })
+            .onInvalid()
+            .validate(response -> appTokenStore.validate(token))
+            .onValid()
+            .build();
+
+
+        // final boolean isTokenValid = appTokenStore.validate(token);
+        // final App app = appDao.findById(appId);
+        //
+        // if (app == null || !isTokenValid) {
+        //     return StashResponse.forbidden();
+        // } else {
+        //     appDao.delete(app.getAppId());
+        //     return StashResponse.ok();
+        // }
     }
 
     @POST
@@ -104,4 +119,5 @@ public class AppResource {
             return StashResponse.forbidden("Invalid credentials.");
         }
     }
+
 }

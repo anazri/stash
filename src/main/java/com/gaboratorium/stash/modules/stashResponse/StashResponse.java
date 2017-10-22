@@ -4,9 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+import javax.ws.rs.GET;
 import javax.ws.rs.core.Response;
+import java.util.function.Function;
 
 public class StashResponse {
+
+    @Getter @Setter
+    private  boolean isValid;
+    @Getter
+    private boolean isImmutable;
+
     private static ObjectMapper mapper = Jackson.newObjectMapper();
 
     // Ok
@@ -52,5 +64,33 @@ public class StashResponse {
         } catch (JsonProcessingException e) {
             return "Response object parsing failed.";
         }
+    }
+
+    // Crazy stuff
+
+    public StashResponse validate(Function<Boolean, Boolean> func) {
+        final StashResponse stashResponse = new StashResponse();
+        stashResponse.setValid(true);
+        return stashResponse;
+    }
+
+    public StashResponse onInvalid() {
+        final StashResponse stashResponse = new StashResponse();
+        if (!stashResponse.isValid()) {
+            stashResponse.isImmutable = true;
+        }
+        return stashResponse;
+    }
+
+    public StashResponse onValid() {
+        final StashResponse stashResponse = new StashResponse();
+        if (stashResponse.isValid()) {
+            stashResponse.isImmutable = true;
+        }
+        return stashResponse;
+    }
+
+    public Response build() {
+        return this.isValid ? build(200) : build(403);
     }
 }
