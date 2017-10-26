@@ -35,6 +35,10 @@ public class StashTokenStore {
         }
     }
 
+    public Jwt getAppToken(String jwt) {
+        return parser.parse(jwt);
+    }
+
     private Date getHalfAnHourFromNow() {
         return Date.from(
             Instant

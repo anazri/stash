@@ -5,19 +5,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
-import javax.ws.rs.GET;
 import javax.ws.rs.core.Response;
-import java.util.function.Function;
+import java.util.concurrent.Callable;
 
 public class StashResponse {
 
     @Getter @Setter
     private  boolean isValid;
-    @Getter
-    private boolean isImmutable;
+
+    private Integer status = 200;
 
     private static ObjectMapper mapper = Jackson.newObjectMapper();
 
@@ -66,31 +63,22 @@ public class StashResponse {
         }
     }
 
-    // Crazy stuff
+    // Chaining
 
-    public StashResponse validate(Function<Boolean, Boolean> func) {
-        final StashResponse stashResponse = new StashResponse();
-        stashResponse.setValid(true);
-        return stashResponse;
+    public StashResponse validate(Callable<Boolean> func) throws Exception {
+        this.setValid(func.call());
+        return this;
     }
 
-    public StashResponse onInvalid() {
-        final StashResponse stashResponse = new StashResponse();
-        if (!stashResponse.isValid()) {
-            stashResponse.isImmutable = true;
-        }
-        return stashResponse;
+    public StashResponse onInvalid(Callable<StashResponse> func) throws Exception {
+        return !this.isValid ? func.call() : this;
     }
 
-    public StashResponse onValid() {
-        final StashResponse stashResponse = new StashResponse();
-        if (stashResponse.isValid()) {
-            stashResponse.isImmutable = true;
-        }
-        return stashResponse;
+    public StashResponse onValid(Callable<StashResponse> func) throws Exception {
+        return this.isValid ? func.call() : this;
     }
 
     public Response build() {
-        return this.isValid ? build(200) : build(403);
+        return build(this.status);
     }
 }

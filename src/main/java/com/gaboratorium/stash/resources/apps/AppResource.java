@@ -79,27 +79,9 @@ public class AppResource {
     public Response deleteApp(
         @PathParam("id") final String appId,
         @HeaderParam(tokenKey) final String token
-    ) {
-        return new StashResponse()
-            .validate(response -> {
-                final String test = "asd";
-                return true;
-            })
-            .onInvalid()
-            .validate(response -> appTokenStore.validate(token))
-            .onValid()
-            .build();
+    ) throws Exception {
 
-
-        // final boolean isTokenValid = appTokenStore.validate(token);
-        // final App app = appDao.findById(appId);
-        //
-        // if (app == null || !isTokenValid) {
-        //     return StashResponse.forbidden();
-        // } else {
-        //     appDao.delete(app.getAppId());
-        //     return StashResponse.ok();
-        // }
+        return StashResponse.ok();
     }
 
     @POST
