@@ -7,8 +7,8 @@ import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.appAuthenticator.AppTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.App;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
-import com.gaboratorium.stash.resources.apps.requests.AuthenticateAppRequestBody;
 import com.gaboratorium.stash.resources.apps.requests.CreateAppRequestBody;
+import com.gaboratorium.stash.resources.apps.requests.HeaderParams;
 import io.dropwizard.jackson.Jackson;
 import lombok.RequiredArgsConstructor;
 import javax.validation.Valid;
@@ -27,15 +27,12 @@ public class AppResource {
     private final AppDao appDao;
     private final AppTokenStore appTokenStore;
 
-    private final String tokenKey = "X-Auth-Token";
-
     // Endpoints
 
     @POST
     public Response createApp(
         @Valid final CreateAppRequestBody body
     ) {
-
         final boolean isAppIdFree = appDao.findById(body.appId) == null;
         if (!isAppIdFree) {
             return StashResponse.forbidden("App ID is taken, please choose another one.");
@@ -54,34 +51,36 @@ public class AppResource {
     }
 
     @GET
-    @Path("/{id}")
     @AppAuthenticationRequired
     public Response getApp(
-        @PathParam("id") final String appId,
-        @HeaderParam(tokenKey) final String token
+        @HeaderParam(HeaderParams.APP_ID) final String appId
     ) throws JsonProcessingException {
+
         final App app = appDao.findById(appId);
         return StashResponse.ok(app);
     }
 
     @DELETE
-    @Path("/{id}")
     @AppAuthenticationRequired
     public Response deleteApp(
-        @PathParam("id") final String appId
+        @HeaderParam(HeaderParams.APP_ID) final String appId
     ) throws Exception {
+
+        // TODO: return if query was succesful
+        appDao.delete(appId);
         return StashResponse.ok();
     }
 
     @POST
-    @Path("/{id}/authenticate")
+    @Path("/authenticate")
     public Response authenticateApp(
-        @PathParam("id") final String appId,
-        @Valid final AuthenticateAppRequestBody body
+        @HeaderParam(HeaderParams.APP_ID) final String appId,
+        @HeaderParam(HeaderParams.APP_SECRET) final String appSecret
     ) {
+
         final App app = appDao.findById(appId);
         final String token = appTokenStore.create(app.getAppId());
-        final boolean isSecretValid = app.getAppSecret().equals(body.appSecret);
+        final boolean isSecretValid = app.getAppSecret().equals(appSecret);
 
         return isSecretValid ?
                 StashResponse.ok(token) :

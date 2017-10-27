@@ -41,6 +41,10 @@ public class AppTokenStore {
         }
     }
 
+    public void destroy(String jwt) {
+        parser.de
+    }
+
     private Date getNow() {
         return Date.from(
             Instant.now()
