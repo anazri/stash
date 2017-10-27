@@ -6,7 +6,6 @@ import com.gaboratorium.stash.resources.users.dao.User;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
 import com.gaboratorium.stash.resources.users.requests.RegisterUserRequestBody;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
