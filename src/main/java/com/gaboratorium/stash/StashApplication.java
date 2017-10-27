@@ -15,7 +15,6 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.skife.jdbi.v2.DBI;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 

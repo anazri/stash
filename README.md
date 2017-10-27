@@ -1,5 +1,17 @@
 # Stash Backend
 
-- [Start reading the documentation here](docs/Welcome.md)
-- [Have a look at the API docs](https://github.com/gaboratorium/stash/issues/9)
-- [Read up on the BA report checklist](https://github.com/gaboratorium/stash/issues/6)
+Stash Backend is a BA project written by Gábor Pintér for the
+Web Development BA program at [Copenhagen School of Design
+and Technology](http://www.kea.dk). The application is a general purpuse backend demonstrating some of the 
+core features of the [Dropwizard](http://www.dropwizard.io) framework. 
+
+## Roadmap
+
+- **App service** for creating an authenticating apps using SB
+- **User service** for user registration and authentication
+- **Document service** for a lightweight database management
+- **File service** for storing files
+
+## Documentation
+
+- [See Wiki](https://github.com/gaboratorium/stash/wiki)
