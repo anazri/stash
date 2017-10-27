@@ -24,7 +24,7 @@ public class StashResponse {
     public static Response ok(Object responseObject) { return build(200, responseObject); }
 
     // Not found
-    public static Response notFound() { return build(404); }
+    public static Response notFound() { return build(404, "Not found"); }
     public static Response notFound(String message) { return build(404, message); }
     public static Response notFound(Object responseObject) { return build(404, responseObject); }
 
@@ -32,6 +32,11 @@ public class StashResponse {
     public static Response forbidden() { return build(403, "Forbidden"); }
     public static Response forbidden(String message) { return build(403, message); }
     public static Response forbidden(Object responseObject) { return build(403, responseObject); }
+
+    // Conflict
+    public static Response conflict() { return build(409, "Conflict"); }
+    public static Response conflict(String message) { return build(409, message); }
+    public static Response conflict(Object responseObject) { return build(409, responseObject); }
 
     // Build
 

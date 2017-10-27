@@ -9,9 +9,9 @@ import com.gaboratorium.stash.resources.apps.dao.App;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.requests.CreateAppRequestBody;
 import com.gaboratorium.stash.resources.apps.requests.HeaderParams;
-import io.dropwizard.jackson.Jackson;
 import lombok.RequiredArgsConstructor;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -23,7 +23,8 @@ import javax.ws.rs.core.Response;
 public class AppResource {
 
     // Constructor
-    private final ObjectMapper mapper = Jackson.newObjectMapper();
+
+    private final ObjectMapper mapper;
     private final AppDao appDao;
     private final AppTokenStore appTokenStore;
 
@@ -31,7 +32,7 @@ public class AppResource {
 
     @POST
     public Response createApp(
-        @Valid final CreateAppRequestBody body
+        @Valid @NotNull final CreateAppRequestBody body
     ) {
         final boolean isAppIdFree = appDao.findById(body.appId) == null;
         if (!isAppIdFree) {
@@ -66,7 +67,7 @@ public class AppResource {
         @HeaderParam(HeaderParams.APP_ID) final String appId
     ) throws Exception {
 
-        // TODO: return if query was succesful
+        // TODO: return if query state
         appDao.delete(appId);
         return StashResponse.ok();
     }

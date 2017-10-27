@@ -1,12 +1,16 @@
 package com.gaboratorium.stash;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequiredFilter;
 import com.gaboratorium.stash.modules.appAuthenticator.AppTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
+import com.gaboratorium.stash.resources.users.UserResource;
+import com.gaboratorium.stash.resources.users.dao.UserDao;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.db.ManagedDataSource;
+import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -19,6 +23,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class StashApplication extends Application<StashConfiguration> {
+
+    private ObjectMapper mapper = Jackson.newObjectMapper();
+
     public static void main(String[] args) throws Exception {
         new StashApplication().run(args);
     }
@@ -40,11 +47,18 @@ public class StashApplication extends Application<StashConfiguration> {
 
         // Dao
         final AppDao appDao = dbi.onDemand(AppDao.class);
+        final UserDao userDao = dbi.onDemand(UserDao.class);
 
         // Resource
         final AppResource appResource = new AppResource(
+            mapper,
             appDao,
             appTokenStore
+        );
+
+        final UserResource userResource = new UserResource(
+            mapper,
+            userDao
         );
 
         // Run Migrations
@@ -53,6 +67,7 @@ public class StashApplication extends Application<StashConfiguration> {
         // Module registrations
         environment.jersey().register(AppAuthenticationRequiredFilter.class);
         environment.jersey().register(appResource);
+        environment.jersey().register(userResource);
     }
 
     private void runDatabaseMigrations(Environment environment, DataSourceFactory database) throws LiquibaseException, SQLException {

@@ -5,7 +5,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
     <changeSet id="1" author="Gabor Pinter">
-        <!-- Applications -->
+
+        <!-- Apps -->
         <createTable tableName="apps">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
@@ -20,6 +21,55 @@
                 <constraints nullable="false"/>
             </column>
             <column name="master_email" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="datetime" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Users -->
+        <createTable tableName="users">
+            <column name="id" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_email" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_password_hash" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_email_secondary" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="user_first_name" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="user_last_name" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="user_gender" type="varchar(1)">
+                <constraints/>
+            </column>
+            <column name="user_role" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="user_address" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="user_city" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="user_zip" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="user_country" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="user_birthday" type="datetime">
+                <constraints/>
+            </column>
+            <column name="created_at" type="datetime" defaultValueDate="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
         </createTable>
