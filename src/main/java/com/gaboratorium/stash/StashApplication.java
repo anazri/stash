@@ -1,16 +1,15 @@
 package com.gaboratorium.stash;
 
-import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
+import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequiredFilter;
+import com.gaboratorium.stash.modules.appAuthenticator.AppTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
 import io.dropwizard.Application;
-import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.db.ManagedDataSource;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.jsonwebtoken.SignatureAlgorithm;
 import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
@@ -38,20 +37,22 @@ public class StashApplication extends Application<StashConfiguration> {
         final DBI dbi = getDBI(environment, dataSourceFactory);
 
         // Modules
-        final StashTokenStore appTokenStore = new StashTokenStore(
-            configuration.getAppsTokenStoreKey(),
-            SignatureAlgorithm.HS256
-        );
+        final AppTokenStore appTokenStore = new AppTokenStore();
 
-        // Resources
+        // Dao
         final AppDao appDao = dbi.onDemand(AppDao.class);
+
+        // Resource
         final AppResource appResource = new AppResource(
             appDao,
             appTokenStore
         );
 
-        // Configuration
+        // Run Migrations
         runDatabaseMigrations(environment, dataSourceFactory);
+
+        // Module registrations
+        environment.jersey().register(AppAuthenticationRequiredFilter.class);
         environment.jersey().register(appResource);
     }
 
