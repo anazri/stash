@@ -1,4 +1,4 @@
-package com.gaboratorium.stash.modules.appAuthenticator;
+package com.gaboratorium.stash.modules.stashTokenStore;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.Date;
 
 @RequiredArgsConstructor
-public class AppTokenStore {
+public class StashTokenStore {
 
     // TODO: Should be loaded from configuration file
     final private String key = "NoOneShouldKnowThisNotEvenSkat";
@@ -16,22 +16,22 @@ public class AppTokenStore {
     final private JwtBuilder builder = Jwts.builder();
     final private JwtParser parser = Jwts.parser();
 
-    public String create(String appId) {
+    public String create(String subject, Date expiration) {
         return builder
             .signWith(alg, key)
-            .setSubject(appId)
+            .setSubject(subject)
             .setIssuer(iss)
             .setAudience(aud)
             .setNotBefore(getNow())
-            .setExpiration(getHalfAnHourFromNow())
+            .setExpiration(expiration)
             .compact();
     }
 
-    public boolean isValid(String jwt, String appId) {
+    public boolean isValid(String jwt, String requiredSubject) {
         try {
             parser
                 .setSigningKey(key)
-                .requireSubject(appId)
+                .requireSubject(requiredSubject)
                 .requireIssuer(iss)
                 .requireAudience(aud)
                 .parseClaimsJws(jwt);
@@ -47,7 +47,7 @@ public class AppTokenStore {
         );
     }
 
-    private Date getHalfAnHourFromNow() {
+    public static Date getHalfAnHourFromNow() {
         return Date.from(
             Instant
                 .now()

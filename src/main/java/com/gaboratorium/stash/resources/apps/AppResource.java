@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequired;
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
-import com.gaboratorium.stash.modules.appAuthenticator.AppTokenStore;
+import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.App;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.requests.CreateAppRequestBody;
@@ -26,7 +26,7 @@ public class AppResource {
 
     private final ObjectMapper mapper;
     private final AppDao appDao;
-    private final AppTokenStore appTokenStore;
+    private final StashTokenStore stashTokenStore;
 
     // Endpoints
 
@@ -80,7 +80,7 @@ public class AppResource {
     ) {
 
         final App app = appDao.findById(appId);
-        final String token = appTokenStore.create(app.getAppId());
+        final String token = stashTokenStore.create(app.getAppId(), StashTokenStore.getHalfAnHourFromNow());
         final boolean isSecretValid = app.getAppSecret().equals(appSecret);
 
         return isSecretValid ?

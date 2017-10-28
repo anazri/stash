@@ -2,7 +2,7 @@ package com.gaboratorium.stash;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequiredFilter;
-import com.gaboratorium.stash.modules.appAuthenticator.AppTokenStore;
+import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
 import com.gaboratorium.stash.resources.users.UserResource;
@@ -43,7 +43,7 @@ public class StashApplication extends Application<StashConfiguration> {
         final DBI dbi = getDBI(environment, dataSourceFactory);
 
         // Modules
-        final AppTokenStore appTokenStore = new AppTokenStore();
+        final StashTokenStore appTokenStore = new StashTokenStore();
 
         // Dao
         final AppDao appDao = dbi.onDemand(AppDao.class);
