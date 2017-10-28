@@ -2,6 +2,7 @@ package com.gaboratorium.stash.resources.users.dao;
 
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
+import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 import java.sql.Timestamp;
 
@@ -92,5 +93,11 @@ public interface UserDao {
         @Bind("userZip") String userZip,
         @Bind("userCountry") String userCountry,
         @Bind("userBirthday") Timestamp userBirthday
+    );
+
+    @SqlUpdate("delete from users where id = :userId AND app_id = :appId;")
+    void delete(
+        @Bind("userId") String userId,
+        @Bind("appId") String appId
     );
 }

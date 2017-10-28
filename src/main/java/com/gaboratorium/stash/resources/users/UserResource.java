@@ -91,8 +91,9 @@ public class UserResource {
         @Valid @NotNull final UpdateUserRequestBody body
     ) {
         final User currentUser = userDao.findById(userId, appId);
+        final boolean isUserNotFound = currentUser == null;
 
-        if (currentUser == null) {
+        if (isUserNotFound) {
             return StashResponse.notFound();
         }
 
@@ -117,6 +118,24 @@ public class UserResource {
         );
 
         return StashResponse.ok(updatedUserFromDb);
+    }
+
+    @DELETE
+    @Path("/{user_id}")
+    @AppAuthenticationRequired
+    public Response deleteUser(
+        @HeaderParam(HeaderParams.APP_ID) final String appId,
+        @PathParam("user_id") final String userId
+    ) {
+        final User user = userDao.findById(userId, appId);
+        final boolean isUserNotFound = user == null;
+
+        if (isUserNotFound) {
+            return StashResponse.notFound();
+        }
+
+        userDao.delete(user.getUserId(), user.getAppId());
+        return StashResponse.ok();
     }
 
 
