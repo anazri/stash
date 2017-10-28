@@ -11,6 +11,7 @@ public class UserMapper implements ResultSetMapper<User>{
     public User map(int index, ResultSet resultSet, StatementContext ctx) throws SQLException {
         return new User(
             resultSet.getString("id"),
+            resultSet.getString("app_id"),
             resultSet.getString("user_email"),
             resultSet.getString("user_password_hash"),
             resultSet.getString("user_email_secondary"),

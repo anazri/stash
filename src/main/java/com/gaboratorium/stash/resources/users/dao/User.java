@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 public class User {
 
     @Getter final private String userId;
+    @Getter final private String appId;
     @Getter final private String userEmail;
     @Getter final private String userPasswordHash;
     @Getter final private String userEmailSecondary;

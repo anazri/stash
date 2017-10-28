@@ -33,6 +33,9 @@
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="app_id" type="varchar(256)">
+                <constraints references="apps(id)" foreignKeyName="app_id" nullable="false"/>
+            </column>
             <column name="user_email" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>

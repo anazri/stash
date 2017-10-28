@@ -17,4 +17,4 @@ core features of the [Dropwizard](http://www.dropwizard.io) framework.
 ## Documentation & support
 
 - [See Wiki](https://github.com/gaboratorium/stash/wiki)
-- [PRs Welcome](https://github.com/gaboratorium/stash/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+- [PRs Welcome - issues you can help with](https://github.com/gaboratorium/stash/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
