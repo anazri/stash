@@ -36,7 +36,7 @@ public class AppTokenStore {
                 .requireAudience(aud)
                 .parseClaimsJws(jwt);
             return true;
-        } catch (SignatureException e) {
+        } catch (SignatureException | ExpiredJwtException | IncorrectClaimException | MalformedJwtException e) {
             return false;
         }
     }
