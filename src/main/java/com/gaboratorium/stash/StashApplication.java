@@ -7,6 +7,8 @@ import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequir
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
 import com.gaboratorium.stash.resources.dashboard.DashboardResource;
+import com.gaboratorium.stash.resources.documents.DocumentResource;
+import com.gaboratorium.stash.resources.documents.dao.DocumentDao;
 import com.gaboratorium.stash.resources.users.UserResource;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
 import io.dropwizard.Application;
@@ -52,6 +54,7 @@ public class StashApplication extends Application<StashConfiguration> {
         // Dao
         final AppDao appDao = dbi.onDemand(AppDao.class);
         final UserDao userDao = dbi.onDemand(UserDao.class);
+        final DocumentDao documentDao = dbi.onDemand(DocumentDao.class);
 
         // Resource
         final AppResource appResource = new AppResource(
@@ -66,6 +69,12 @@ public class StashApplication extends Application<StashConfiguration> {
             stashTokenStore
         );
 
+        final DocumentResource documentResource = new DocumentResource(
+            mapper,
+            documentDao,
+            stashTokenStore
+        );
+
         final DashboardResource dashboardResource = new DashboardResource();
 
         // Run Migrations
@@ -76,6 +85,7 @@ public class StashApplication extends Application<StashConfiguration> {
         environment.jersey().register(UserAuthenticationRequiredFilter.class);
         environment.jersey().register(appResource);
         environment.jersey().register(userResource);
+        environment.jersey().register(documentResource);
         environment.jersey().register(dashboardResource);
     }
 

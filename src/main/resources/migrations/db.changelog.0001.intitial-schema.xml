@@ -76,5 +76,26 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <!-- Documents -->
+        <createTable tableName="documents">
+            <column name="id" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="app_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_content" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="document_owner_id" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="created_at" type="datetime" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+
     </changeSet>
 </databaseChangeLog>
