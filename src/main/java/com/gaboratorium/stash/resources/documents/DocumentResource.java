@@ -8,12 +8,15 @@ import com.gaboratorium.stash.resources.documents.dao.Document;
 import com.gaboratorium.stash.resources.documents.dao.DocumentDao;
 import com.gaboratorium.stash.resources.documents.requests.CreateDocumentRequestBody;
 import lombok.RequiredArgsConstructor;
+import org.postgresql.util.PGobject;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.UUID;
 
 @Path("/documents")
@@ -37,12 +40,13 @@ public class DocumentResource {
     @POST
     public Response createDocument(
         @Valid @NotNull CreateDocumentRequestBody body
-    ) throws JsonProcessingException {
+    ) throws SQLException, JsonProcessingException {
+
         final String documentId = UUID.randomUUID().toString();
         final Document document = documentDao.insert(
             documentId,
             "testAppId",
-            body.getDocumentContentAsString(),
+            body.getDocumentContentAsJsonb(),
             body.documentOwnerId
         );
 
@@ -68,7 +72,7 @@ public class DocumentResource {
     public Response getDocumentByFilters(
         @QueryParam("filters") String filters
     ) {
-        
+
         return StashResponse.ok(filters);
     }
 

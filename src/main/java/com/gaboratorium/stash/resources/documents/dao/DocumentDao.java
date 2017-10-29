@@ -1,5 +1,6 @@
 package com.gaboratorium.stash.resources.documents.dao;
 
+import org.postgresql.util.PGobject;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
@@ -17,7 +18,7 @@ public interface DocumentDao {
     Document insert(
         @Bind("documentId") String documentId,
         @Bind("appId") String appId,
-        @Bind("documentContent") String documentContent,
+        @Bind("documentContent") PGobject documentContent,
         @Bind("documentOwnerId") String documentOwnerId
     );
 }

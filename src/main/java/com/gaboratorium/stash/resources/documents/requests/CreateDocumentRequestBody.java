@@ -8,8 +8,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.validation.ValidationMethod;
 import lombok.Getter;
+import org.postgresql.util.PGobject;
+
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @JsonDeserialize
 public class CreateDocumentRequestBody {
@@ -22,8 +25,13 @@ public class CreateDocumentRequestBody {
     @JsonProperty @NotNull @Getter
     public String documentOwnerId;
 
-    public String getDocumentContentAsString() throws JsonProcessingException{
-        return mapper.writeValueAsString(documentContent);
+    public PGobject getDocumentContentAsJsonb() throws SQLException, JsonProcessingException {
+        PGobject documentContentAsJsonb = new PGobject();
+        documentContentAsJsonb.setType("jsonb");
+        documentContentAsJsonb.setValue(
+            mapper.writeValueAsString(documentContent)
+        );
+        return documentContentAsJsonb;
     }
 
     @ValidationMethod(message = "Document content must be a json object.")
