@@ -7,12 +7,30 @@ Web Development BA program at [Copenhagen School of Design
 and Technology](http://www.kea.dk). The application is a general purpuse backend demonstrating some of the 
 core features of the [Dropwizard](http://www.dropwizard.io) framework. 
 
+The purpose of the application is to serve as an out-of-the-box backend which can be
+easily run locally or be deployed to a provider of your choice 
+(e.g.: [Heroku](https://www.heroku.com/), [AWS](https://aws.amazon.com/), 
+[Docker Cloud](https://cloud.docker.com/)). Perfect for frontend web- and mobile
+developers.
+
 ## Roadmap
 
-- **App service** for creating an authenticating apps using SB
+- **App service**
+  - Create multiple apps
+  - Authenticate apps using JWT
 - **User service** for user registration and authentication
-- **Document service** for a lightweight database management
-- **File service** for storing files
+  - Register users
+  - Authenticate (log in / out) users
+  - Update / delete user profiles
+- **Document service**
+  - Store, update and delete `json` objects in database
+  - Set document accessibility 
+  - Query them by IDs or tags
+- **File service**
+  - Upload / delete files
+  - Set file accessibility
+- **Stash Dashboard**
+  - Overview and settings of your backend in the browser
 
 ## Documentation & support
 
