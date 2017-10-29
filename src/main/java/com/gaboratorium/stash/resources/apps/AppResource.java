@@ -80,6 +80,13 @@ public class AppResource {
     ) {
 
         final App app = appDao.findById(body.getAppId());
+
+        final boolean isAppNotFound = app == null;
+
+        if (isAppNotFound) {
+            return StashResponse.notFound();
+        }
+
         final String token = stashTokenStore.create(app.getAppId(), StashTokenStore.getHalfAnHourFromNow());
         final boolean isSecretValid = app.getAppSecret().equals(body.getAppSecret());
 

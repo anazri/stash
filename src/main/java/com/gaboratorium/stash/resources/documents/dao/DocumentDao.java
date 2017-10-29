@@ -10,24 +10,30 @@ import java.util.List;
 
 public interface DocumentDao {
 
-    @SqlQuery("select * from documents where id = :documentId;")
+    @SqlQuery("select * from documents where id = :documentId and app_id = :appId;")
     @Mapper(DocumentMapper.class)
     Document findById(
-        @Bind("documentId") String documentId
+        @Bind("documentId") String documentId,
+        @Bind("appId") String appId
     );
 
-    @SqlQuery("select * from documents where document_content ->> :key = :value")
+    @SqlQuery("select * from documents where " +
+        "app_id = :appId and " +
+        "document_content ->> :key = :value")
     @Mapper(DocumentMapper.class)
     List<Document> findByFilter(
+        @Bind("appId") String appId,
         @Bind("key") String key,
         @Bind("value") String value
     );
 
     @SqlQuery("select * from documents where " +
+        "app_id = :appId and " +
         "document_content ->> :key = :value and " +
         "document_content ->> :keySecondary = :valueSecondary")
     @Mapper(DocumentMapper.class)
     List<Document> findByFilters(
+        @Bind("appId") String appId,
         @Bind("key") String key,
         @Bind("value") String value,
         @Bind("keySecondary") String keySecondary,
