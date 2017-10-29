@@ -10,14 +10,13 @@ import java.io.IOException;
 @AppAuthenticationRequired
 public class AppAuthenticationRequiredFilter implements ContainerRequestFilter {
 
-
     private final StashTokenStore stashTokenStore = new StashTokenStore();
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
 
-        final String token = requestContext.getHeaderString("X-Auth-App-Token");
-        final String appId = requestContext.getHeaderString("X-Auth-App-Id");
+        final String token = requestContext.getHeaderString(AppAuthenticationHeaders.APP_TOKEN);
+        final String appId = requestContext.getHeaderString(AppAuthenticationHeaders.APP_ID);
         final boolean isParamListProvided = StringUtils.isEmpty(token) || StringUtils.isEmpty(appId);
         final String errorMsg =
             "App authentication failed because auth token was either not provided, corrupted or expired.";

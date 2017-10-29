@@ -13,22 +13,22 @@ easily run locally or be deployed to a provider of your choice
 [Docker Cloud](https://cloud.docker.com/)). Perfect for frontend web- and mobile
 developers.
 
-## Roadmap
+## Features
 
 - **App service**
   - Create multiple apps
   - Authenticate apps using JWT
-- **User service** for user registration and authentication
+- **User service**
   - Register users
   - Authenticate (log in / out) users
   - Update / delete user profiles
 - **Document service**
-  - Store, update and delete `json` objects in database
-  - Set document accessibility 
-  - Query them by IDs or tags
+  - Store, update and delete *json* objects in database
+  - Set document publicity and accessibility 
+  - Query documents using document IDs or document tags
 - **File service**
   - Upload / delete files
-  - Set file accessibility
+  - Set file publicity and accessibility
 - **Stash Dashboard**
   - Overview and settings of your backend in the browser
 

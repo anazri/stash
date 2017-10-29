@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 public interface UserDao {
 
     // Get by ID
-    @SqlQuery("select * from users where id = :userId AND app_id = :appId")
+    @SqlQuery("select * from users where id = :userId AND app_id = :appId;")
     @Mapper(UserMapper.class)
     User findById(
         @Bind("userId") String userId,
@@ -21,6 +21,18 @@ public interface UserDao {
     @Mapper(UserMapper.class)
     User findByUserEmail(
         @Bind("userEmail") String userEmail,
+        @Bind("appId") String appId
+    );
+
+    // Get by credentials
+    @SqlQuery("select * from users where " +
+        "id = :userId AND " +
+        "user_password_hash = :userPasswordHash AND " +
+        "app_id = :appId;")
+    @Mapper(UserMapper.class)
+    User findByUserCredentials(
+        @Bind("userId") String userId,
+        @Bind("userPasswordHash") String userPasswordHash,
         @Bind("appId") String appId
     );
 
@@ -75,7 +87,7 @@ public interface UserDao {
         "user_country = :userCountry, " +
         "user_birthday = :userBirthday " +
         "where id = :userId " +
-        "returning *")
+        "returning *;")
     @Mapper(UserMapper.class)
     User update(
         @Bind("userId") String userId,

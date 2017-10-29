@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 @JsonDeserialize
 public class RegisterUserRequestBody {
     @JsonProperty @NotEmpty public String userId;
-    @JsonProperty @NotEmpty public String appId;
     @JsonProperty @NotEmpty public String userEmail;
     @JsonProperty @NotEmpty public String userPasswordHash;
     @JsonProperty public String userEmailSecondary;

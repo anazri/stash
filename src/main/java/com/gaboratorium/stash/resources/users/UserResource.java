@@ -1,12 +1,15 @@
 package com.gaboratorium.stash.resources.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationHeaders;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequired;
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
-import com.gaboratorium.stash.resources.apps.requests.CreateAppRequestBody;
-import com.gaboratorium.stash.resources.apps.requests.HeaderParams;
+import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
+import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationHeaders;
+import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequired;
 import com.gaboratorium.stash.resources.users.dao.User;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
+import com.gaboratorium.stash.resources.users.requests.AuthenticateUserRequestBody;
 import com.gaboratorium.stash.resources.users.requests.RegisterUserRequestBody;
 import com.gaboratorium.stash.resources.users.requests.UpdateUserRequestBody;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +30,14 @@ public class UserResource {
 
     private final ObjectMapper mapper;
     private final UserDao userDao;
+    private final StashTokenStore stashTokenStore;
 
     // Endpoints
 
     @POST
     @AppAuthenticationRequired
     public Response registerUser(
-        @HeaderParam(HeaderParams.APP_ID) final String appId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
         @Valid @NotNull final RegisterUserRequestBody body
     ) {
 
@@ -49,7 +53,7 @@ public class UserResource {
 
         final User user = userDao.insert(
             body.userId,
-            body.appId,
+            appId,
             body.userEmail,
             body.userPasswordHash,
             body.userEmailSecondary,
@@ -71,7 +75,7 @@ public class UserResource {
     @Path("/{user_id}")
     @AppAuthenticationRequired
     public Response getUser(
-        @HeaderParam(HeaderParams.APP_ID) final String appId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
         @PathParam("user_id") final String userId
     ) {
         final User user = userDao.findById(userId, appId);
@@ -85,12 +89,20 @@ public class UserResource {
     @PUT
     @Path("/{user_id}")
     @AppAuthenticationRequired
+    @UserAuthenticationRequired
     public Response updateUser(
-        @HeaderParam(HeaderParams.APP_ID) final String appId,
-        @PathParam("user_id") final String userId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) final String requesterUserId,
+        @PathParam("user_id") final String targetUserId,
         @Valid @NotNull final UpdateUserRequestBody body
     ) {
-        final User currentUser = userDao.findById(userId, appId);
+        // In current implementation users can only update their own profiles
+        final boolean isRequesterAlsoTheOwner = requesterUserId.equals(targetUserId);
+        if (!isRequesterAlsoTheOwner) {
+            return StashResponse.forbidden("Users can update their own profiles");
+        }
+
+        final User currentUser = userDao.findById(targetUserId, appId);
         final boolean isUserNotFound = currentUser == null;
 
         if (isUserNotFound) {
@@ -123,8 +135,9 @@ public class UserResource {
     @DELETE
     @Path("/{user_id}")
     @AppAuthenticationRequired
+    @UserAuthenticationRequired
     public Response deleteUser(
-        @HeaderParam(HeaderParams.APP_ID) final String appId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
         @PathParam("user_id") final String userId
     ) {
         final User user = userDao.findById(userId, appId);
@@ -136,6 +149,24 @@ public class UserResource {
 
         userDao.delete(user.getUserId(), user.getAppId());
         return StashResponse.ok();
+    }
+
+    @POST
+    @Path("/authenticate")
+    @AppAuthenticationRequired
+    public Response authenticateUser(
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @Valid @NotNull final AuthenticateUserRequestBody body
+    ) {
+        final User user = userDao.findByUserCredentials(body.getUserId(), body.getUserPasswordHash(), appId);
+        final boolean isUserNotFound = user == null;
+
+        if (isUserNotFound) {
+            return StashResponse.forbidden("User does not exist or wrong credentials");
+        }
+
+        final String token = stashTokenStore.create(body.userId, StashTokenStore.getHalfAnHourFromNow());
+        return StashResponse.ok(token);
     }
 
 

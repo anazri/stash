@@ -3,6 +3,7 @@ package com.gaboratorium.stash;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequiredFilter;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
+import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequiredFilter;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
 import com.gaboratorium.stash.resources.dashboard.DashboardResource;
@@ -46,7 +47,7 @@ public class StashApplication extends Application<StashConfiguration> {
         final DBI dbi = getDBI(environment, dataSourceFactory);
 
         // Modules
-        final StashTokenStore appTokenStore = new StashTokenStore();
+        final StashTokenStore stashTokenStore = new StashTokenStore();
 
         // Dao
         final AppDao appDao = dbi.onDemand(AppDao.class);
@@ -56,12 +57,13 @@ public class StashApplication extends Application<StashConfiguration> {
         final AppResource appResource = new AppResource(
             mapper,
             appDao,
-            appTokenStore
+            stashTokenStore
         );
 
         final UserResource userResource = new UserResource(
             mapper,
-            userDao
+            userDao,
+            stashTokenStore
         );
 
         final DashboardResource dashboardResource = new DashboardResource();
@@ -71,6 +73,7 @@ public class StashApplication extends Application<StashConfiguration> {
 
         // Module registrations
         environment.jersey().register(AppAuthenticationRequiredFilter.class);
+        environment.jersey().register(UserAuthenticationRequiredFilter.class);
         environment.jersey().register(appResource);
         environment.jersey().register(userResource);
         environment.jersey().register(dashboardResource);
