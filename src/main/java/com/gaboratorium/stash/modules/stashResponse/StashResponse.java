@@ -23,6 +23,11 @@ public class StashResponse {
     public static Response ok(String message) { return build(200, message); }
     public static Response ok(Object responseObject) { return build(200, responseObject); }
 
+    // Bad request
+    public static Response badRequest() { return build(400, "Bad request"); }
+    public static Response badRequest(String message) { return build(400, message); }
+    public static Response badRequest(Object responseObject) { return build(400, responseObject); }
+
     // Not found
     public static Response notFound() { return build(404, "Not found"); }
     public static Response notFound(String message) { return build(404, message); }

@@ -22,6 +22,16 @@ public interface DocumentDao {
         @Bind("value") String value
     );
 
+    @SqlQuery("select * from documents where " +
+        "document_content ->> :key = :value and " +
+        "document_content ->> :keySecondary = :valueSecondary")
+    @Mapper(DocumentMapper.class)
+    List<Document> findByFilters(
+        @Bind("key") String key,
+        @Bind("value") String value,
+        @Bind("keySecondary") String keySecondary,
+        @Bind("valueSecondary") String valueSecondary
+    );
 
     @SqlQuery("insert into documents values (:documentId, :appId, :documentContent, :documentOwnerId) returning *;")
     @Mapper(DocumentMapper.class)

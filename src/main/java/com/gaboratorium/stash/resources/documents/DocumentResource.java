@@ -8,17 +8,14 @@ import com.gaboratorium.stash.resources.documents.dao.Document;
 import com.gaboratorium.stash.resources.documents.dao.DocumentDao;
 import com.gaboratorium.stash.resources.documents.requests.CreateDocumentRequestBody;
 import lombok.RequiredArgsConstructor;
-import org.postgresql.util.PGobject;
 
+import javax.print.Doc;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,57 +67,23 @@ public class DocumentResource {
     }
 
     @GET
-    public Response getDocumentByFilters(
-        @QueryParam("key") String key,
-        @QueryParam("value") String value
+    public Response getDocumentByFilter(
+        @NotNull @QueryParam("key") String key,
+        @NotNull @QueryParam("value") String value,
+        @QueryParam("keySecondary") String keySecondary,
+        @QueryParam("valueSecondary") String valueSecondary
     ) {
 
-        final List<Document> document = documentDao.findByFilter(key, value);
-        return StashResponse.ok(document);
+        final boolean isSecondaryKeyValuePairProvided = keySecondary != null && valueSecondary != null;
+
+        final List<Document> documents = isSecondaryKeyValuePairProvided ?
+            documentDao.findByFilters(key, value, keySecondary, valueSecondary) :
+            documentDao.findByFilter(key, value);
+
+        final boolean isListEmpty = documents.isEmpty();
+
+        return isListEmpty ?
+            StashResponse.notFound() :
+            StashResponse.ok(documents);
     }
-
-    // Let's not talk about this
-    private String getFiltersAsSql(List<String> filtersAsList) {
-
-        String sql = "";
-
-        for(String filter : filtersAsList) {
-            final Integer index = filtersAsList.indexOf(filter);
-
-            switch (index % 3) {
-                case 0:
-                    sql += "document_content ->> '" + filter + "' ";
-                    break;
-                case 1:
-                    String operator = "";
-                    switch (filter) {
-                        case "equals":
-                            operator = "= ";
-                            break;
-                        case "greater":
-                            operator = "> ";
-                            break;
-                        case "less":
-                            operator = "< ";
-                            break;
-                    }
-                    sql += operator + " ";
-                    break;
-                case 2:
-                    sql += "'" + filter + "' ";
-                    if (index < filtersAsList.size() - 1) {
-                        sql += "and ";
-                    } else {
-                        sql += ";";
-                    }
-                    break;
-
-            }
-        }
-
-        System.out.println(sql);
-        return sql;
-    }
-
-
 }
