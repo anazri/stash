@@ -5,6 +5,8 @@ import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
+import java.util.List;
+
 public interface DocumentDao {
 
     @SqlQuery("select * from documents where id = :documentId;")
@@ -12,6 +14,14 @@ public interface DocumentDao {
     Document findById(
         @Bind("documentId") String documentId
     );
+
+    @SqlQuery("select * from documents where document_content ->> :key = :value")
+    @Mapper(DocumentMapper.class)
+    List<Document> findByFilter(
+        @Bind("key") String key,
+        @Bind("value") String value
+    );
+
 
     @SqlQuery("insert into documents values (:documentId, :appId, :documentContent, :documentOwnerId) returning *;")
     @Mapper(DocumentMapper.class)
@@ -21,4 +31,6 @@ public interface DocumentDao {
         @Bind("documentContent") PGobject documentContent,
         @Bind("documentOwnerId") String documentOwnerId
     );
+
+
 }

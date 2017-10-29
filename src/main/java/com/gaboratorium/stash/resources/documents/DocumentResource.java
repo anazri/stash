@@ -17,6 +17,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Path("/documents")
@@ -66,14 +69,57 @@ public class DocumentResource {
             StashResponse.ok(document);
     }
 
-    // TODO: implement filters deserialization
-
     @GET
     public Response getDocumentByFilters(
-        @QueryParam("filters") String filters
+        @QueryParam("key") String key,
+        @QueryParam("value") String value
     ) {
 
-        return StashResponse.ok(filters);
+        final List<Document> document = documentDao.findByFilter(key, value);
+        return StashResponse.ok(document);
+    }
+
+    // Let's not talk about this
+    private String getFiltersAsSql(List<String> filtersAsList) {
+
+        String sql = "";
+
+        for(String filter : filtersAsList) {
+            final Integer index = filtersAsList.indexOf(filter);
+
+            switch (index % 3) {
+                case 0:
+                    sql += "document_content ->> '" + filter + "' ";
+                    break;
+                case 1:
+                    String operator = "";
+                    switch (filter) {
+                        case "equals":
+                            operator = "= ";
+                            break;
+                        case "greater":
+                            operator = "> ";
+                            break;
+                        case "less":
+                            operator = "< ";
+                            break;
+                    }
+                    sql += operator + " ";
+                    break;
+                case 2:
+                    sql += "'" + filter + "' ";
+                    if (index < filtersAsList.size() - 1) {
+                        sql += "and ";
+                    } else {
+                        sql += ";";
+                    }
+                    break;
+
+            }
+        }
+
+        System.out.println(sql);
+        return sql;
     }
 
 
