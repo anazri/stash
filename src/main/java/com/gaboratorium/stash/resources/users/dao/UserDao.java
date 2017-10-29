@@ -86,7 +86,8 @@ public interface UserDao {
         "user_zip = :userZip, " +
         "user_country = :userCountry, " +
         "user_birthday = :userBirthday " +
-        "where id = :userId " +
+        "where id = :userId and " +
+        "app_id = :appId " +
         "returning *;")
     @Mapper(UserMapper.class)
     User update(
