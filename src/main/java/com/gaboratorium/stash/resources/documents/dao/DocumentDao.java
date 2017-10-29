@@ -3,6 +3,7 @@ package com.gaboratorium.stash.resources.documents.dao;
 import org.postgresql.util.PGobject;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
+import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
 import java.util.List;
@@ -40,6 +41,19 @@ public interface DocumentDao {
         @Bind("appId") String appId,
         @Bind("documentContent") PGobject documentContent,
         @Bind("documentOwnerId") String documentOwnerId
+    );
+
+    @SqlQuery("update documents set document_content = :documentContent where id = :documentId returning *")
+    @Mapper(DocumentMapper.class)
+    Document update(
+        @Bind("documentId") String documentId,
+        @Bind("documentContent") PGobject documentContent
+    );
+
+    @SqlUpdate("delete from documents where id = :documentId and app_id = :appId;")
+    void delete(
+        @Bind("documentId") String documentId,
+        @Bind("appId") String appId
     );
 
 

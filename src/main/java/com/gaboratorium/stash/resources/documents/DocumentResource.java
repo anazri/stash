@@ -7,6 +7,7 @@ import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.documents.dao.Document;
 import com.gaboratorium.stash.resources.documents.dao.DocumentDao;
 import com.gaboratorium.stash.resources.documents.requests.CreateDocumentRequestBody;
+import com.gaboratorium.stash.resources.documents.requests.UpdateDocumentRequestBody;
 import lombok.RequiredArgsConstructor;
 
 import javax.print.Doc;
@@ -33,7 +34,7 @@ public class DocumentResource {
 
     // Endpoints
 
-    // TODO: Check documetn ID existence
+    // TODO: Check documeny ID existence
     // TODO: if owner is provided, check owner existence
     // TODO: Add @AppAuthRequired, add appId
 
@@ -85,5 +86,52 @@ public class DocumentResource {
         return isListEmpty ?
             StashResponse.notFound() :
             StashResponse.ok(documents);
+    }
+
+    // TODO: this replaces the object. Probably a mapping should be made, where new properties are added
+    // and existing properties are updated
+
+    @PUT
+    @Path("/{id}")
+    public Response updateDocument(
+        @PathParam("id") String documentId,
+        @Valid @NotNull UpdateDocumentRequestBody body
+    ) throws SQLException, JsonProcessingException {
+
+        final Document document = documentDao.findById(documentId);
+        final boolean isDocumentNotFound = document == null;
+
+        if (isDocumentNotFound) {
+            return StashResponse.notFound();
+        }
+
+        final Document updatedDocument = documentDao.update(
+            documentId,
+            body.getDocumentContentAsJsonb()
+        );
+
+        return StashResponse.ok(updatedDocument);
+    }
+
+    // TODO: add AND app_id = :appId to all Daos
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteDocument(
+        @PathParam("id") String documentId
+    ) {
+        final Document document = documentDao.findById(documentId);
+        final boolean isDocumentNotFound = document == null;
+
+        if (isDocumentNotFound) {
+            return StashResponse.notFound();
+        }
+
+        documentDao.delete(
+            documentId,
+            "testAppId"
+        );
+
+        return StashResponse.ok();
     }
 }

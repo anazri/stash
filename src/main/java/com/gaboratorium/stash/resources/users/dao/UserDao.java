@@ -107,7 +107,7 @@ public interface UserDao {
         @Bind("userBirthday") Timestamp userBirthday
     );
 
-    @SqlUpdate("delete from users where id = :userId AND app_id = :appId;")
+    @SqlUpdate("delete from users where id = :userId and app_id = :appId;")
     void delete(
         @Bind("userId") String userId,
         @Bind("appId") String appId
