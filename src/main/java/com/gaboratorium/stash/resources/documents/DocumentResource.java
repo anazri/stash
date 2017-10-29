@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.UUID;
@@ -33,7 +30,6 @@ public class DocumentResource {
 
     // Endpoints
 
-    // TODO: Add json parsing
     // TODO: Check documetn ID existence
     // TODO: if owner is provided, check owner existence
     // TODO: Add @AppAuthRequired, add appId
@@ -53,5 +49,28 @@ public class DocumentResource {
         return StashResponse.ok(document);
     }
 
-    // TODO: implement @GET
+    @GET
+    @Path("/{id}")
+    public Response getDocumentById(
+        @PathParam("id") String documentId
+    ) {
+        final Document document = documentDao.findById(documentId);
+        final boolean isDocumentNotFound = document == null;
+
+        return isDocumentNotFound ?
+            StashResponse.notFound() :
+            StashResponse.ok(document);
+    }
+
+    // TODO: implement filters deserialization
+
+    @GET
+    public Response getDocumentByFilters(
+        @QueryParam("filters") String filters
+    ) {
+        
+        return StashResponse.ok(filters);
+    }
+
+
 }
