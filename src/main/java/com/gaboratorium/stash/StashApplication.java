@@ -5,6 +5,7 @@ import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
+import com.gaboratorium.stash.resources.dashboard.DashboardResource;
 import com.gaboratorium.stash.resources.users.UserResource;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
 import io.dropwizard.Application;
@@ -14,6 +15,7 @@ import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.dropwizard.views.ViewBundle;
 import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
@@ -33,6 +35,7 @@ public class StashApplication extends Application<StashConfiguration> {
     @Override
     public void initialize(Bootstrap<StashConfiguration> bootstrap) {
         // Bootstrap
+        bootstrap.addBundle(new ViewBundle<StashConfiguration>());
     }
 
     @Override
@@ -61,6 +64,8 @@ public class StashApplication extends Application<StashConfiguration> {
             userDao
         );
 
+        final DashboardResource dashboardResource = new DashboardResource();
+
         // Run Migrations
         runDatabaseMigrations(environment, dataSourceFactory);
 
@@ -68,6 +73,7 @@ public class StashApplication extends Application<StashConfiguration> {
         environment.jersey().register(AppAuthenticationRequiredFilter.class);
         environment.jersey().register(appResource);
         environment.jersey().register(userResource);
+        environment.jersey().register(dashboardResource);
     }
 
     private void runDatabaseMigrations(Environment environment, DataSourceFactory database) throws LiquibaseException, SQLException {
