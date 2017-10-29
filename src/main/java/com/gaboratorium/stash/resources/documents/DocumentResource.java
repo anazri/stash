@@ -6,6 +6,8 @@ import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequired;
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
+import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationHeaders;
+import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequired;
 import com.gaboratorium.stash.resources.documents.dao.Document;
 import com.gaboratorium.stash.resources.documents.dao.DocumentDao;
 import com.gaboratorium.stash.resources.documents.requests.CreateDocumentRequestBody;
@@ -34,18 +36,43 @@ public class DocumentResource {
 
     // Endpoints
 
-    // TODO: Check documeny ID existence
-    // TODO: if owner is provided, check owner existence
-    // TODO: Add @AppAuthRequired, add appId
-
     @POST
     @AppAuthenticationRequired
     public Response createDocument(
         @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
+        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) final String userToken,
         @Valid @NotNull CreateDocumentRequestBody body
     ) throws SQLException, JsonProcessingException {
 
         final String documentId = UUID.randomUUID().toString();
+
+        final boolean isIdTaken = documentDao.findById(documentId, appId) != null;
+
+        // TODO: Retry
+
+        if (isIdTaken) {
+            return StashResponse.conflict("Sorry, something went wrong. Please try again.");
+        }
+
+        final boolean isDocumentOwnerIdProvided = body.documentOwnerId != null;
+        final boolean isUserCredentialsProvided = userId != null && userToken != null;
+
+        // TODO: Eliminate the Christmas tree
+
+        if (isDocumentOwnerIdProvided) {
+            if (isUserCredentialsProvided) {
+                final boolean isTokenValid = stashTokenStore.isValid(userToken, userId);
+                final boolean isRequesterTheTargetUser = userId.equals(body.documentOwnerId);
+                if (!isTokenValid || !isRequesterTheTargetUser) {
+                    return StashResponse.forbidden("User authentication failed.");
+                }
+            } else {
+                return StashResponse.forbidden("Owner cannot be set without user authentication (user token was not provided).");
+            }
+
+        }
+
         final Document document = documentDao.insert(
             documentId,
             appId,
@@ -99,6 +126,7 @@ public class DocumentResource {
 
     @PUT
     @AppAuthenticationRequired
+    @UserAuthenticationRequired
     @Path("/{id}")
     public Response updateDocument(
         @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,

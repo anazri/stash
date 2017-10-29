@@ -24,8 +24,8 @@ developers.
   - Update / delete user profiles
 - **Document service**
   - Store, update and delete *json* objects in database
-  - Set document publicity and accessibility 
-  - Query documents using document IDs or document tags
+  - Set document ownership 
+  - Query documents
 - **File service**
   - Upload / delete files
   - Set file publicity and accessibility

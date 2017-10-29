@@ -22,7 +22,7 @@ public class CreateDocumentRequestBody {
     @JsonProperty @NotNull @Getter
     public JsonNode documentContent;
 
-    @JsonProperty @NotNull @Getter
+    @JsonProperty @Getter
     public String documentOwnerId;
 
     public PGobject getDocumentContentAsJsonb() throws SQLException, JsonProcessingException {
