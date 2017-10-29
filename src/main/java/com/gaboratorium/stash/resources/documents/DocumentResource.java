@@ -130,15 +130,17 @@ public class DocumentResource {
     @Path("/{id}")
     public Response updateDocument(
         @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
         @PathParam("id") String documentId,
         @Valid @NotNull UpdateDocumentRequestBody body
     ) throws SQLException, JsonProcessingException {
 
         final Document document = documentDao.findById(documentId, appId);
         final boolean isDocumentNotFound = document == null;
+        final boolean isUserTheOwner = userId.equals(document.getDocumentOwnerId());
 
-        if (isDocumentNotFound) {
-            return StashResponse.notFound();
+        if (isDocumentNotFound || !isUserTheOwner) {
+            return StashResponse.forbidden();
         }
 
         final Document updatedDocument = documentDao.update(
@@ -154,15 +156,18 @@ public class DocumentResource {
     @DELETE
     @Path("/{id}")
     @AppAuthenticationRequired
+    @UserAuthenticationRequired
     public Response deleteDocument(
         @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
         @PathParam("id") String documentId
     ) {
         final Document document = documentDao.findById(documentId, appId);
         final boolean isDocumentNotFound = document == null;
+        final boolean isUserTheOwner = userId.equals(document.getDocumentOwnerId());
 
-        if (isDocumentNotFound) {
-            return StashResponse.notFound();
+        if (isDocumentNotFound || !isUserTheOwner) {
+            return StashResponse.forbidden();
         }
 
         documentDao.delete(
