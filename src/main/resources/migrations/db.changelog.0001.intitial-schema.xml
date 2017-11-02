@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
-    <changeSet id="1" author="Gabor Pinter">
+    <changeSet id="1" author="Gábor Pintér">
 
         <!-- Apps -->
         <createTable tableName="apps">
@@ -96,6 +96,24 @@
             </column>
         </createTable>
 
+        <!-- Files -->
+        <createTable tableName="files">
+            <column name="id" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="app_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_url" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="file_owner_id" type="varchar(256)">
+                <constraints/>
+            </column>
+            <column name="created_at" type="datetime" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
 
     </changeSet>
 </databaseChangeLog>
