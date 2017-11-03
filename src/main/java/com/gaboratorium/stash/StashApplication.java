@@ -81,7 +81,8 @@ public class StashApplication extends Application<StashConfiguration> {
 
         final FileResource fileResource = new FileResource(
             mapper,
-            fileDao
+            fileDao,
+            stashTokenStore
         );
 
         final DashboardResource dashboardResource = new DashboardResource();
