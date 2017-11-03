@@ -47,6 +47,8 @@ public class FileResource {
 
         final boolean isOwnerIdProvided = ownerId != null;
         final boolean isFilePublic = isPublic == null || isPublic;
+        final String ownerNameInPath = isOwnerIdProvided ? ownerId  : "common";
+        final String fileUploadPath = uploadPath + ownerNameInPath + "/";
 
         // Owner validation
         if (isOwnerIdProvided) {
@@ -69,13 +71,13 @@ public class FileResource {
 
         // Try to copy file
         try {
-            final java.io.File targetFile  = new java.io.File(uploadPath + fileName);
+            final java.io.File targetFile  = new java.io.File(fileUploadPath + fileName);
             FileUtils.copyInputStreamToFile(inputStream, targetFile);
             final String fileId = UUID.randomUUID().toString();
             final File file = fileDao.insert(
                 fileId,
                 appId,
-                uploadPath,
+                fileUploadPath,
                 fileName,
                 ownerId,
                 isFilePublic
