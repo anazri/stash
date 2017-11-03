@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-
-import javax.print.attribute.standard.Media;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -22,7 +20,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URLConnection;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -56,7 +53,6 @@ public class FileResource {
         final String ownerNameInPath = isOwnerIdProvided ? ownerId  : "common";
         final String fileUploadPath = uploadPath + ownerNameInPath + "/";
 
-        // Owner validation
         if (isOwnerIdProvided) {
             final boolean isOwnerAuthenticated =
                 ownerId.equals(userId) && stashTokenStore.isValid(userToken, userId);
@@ -66,7 +62,6 @@ public class FileResource {
             }
         }
 
-        // File existence validation
         final String fileName = fileDetails.getContentDisposition().getFileName();
         final File checkedFile = fileDao.findByNameAndOwner(fileName, appId, ownerId);
         final boolean isFileTaken = checkedFile != null;
@@ -75,7 +70,6 @@ public class FileResource {
                 .conflict("File already exists. Try to call Update File instead, or upload another file.");
         }
 
-        // Try to copy file
         try {
             final java.io.File targetFile  = new java.io.File(fileUploadPath + fileName);
             FileUtils.copyInputStreamToFile(inputStream, targetFile);
@@ -107,54 +101,24 @@ public class FileResource {
         @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) String userToken
     ) {
 
-
-        final File file = getFileByNameAndOwnerId(
-            fileName,
-            appId,
-            ownerId
-        );
-
+        final File file = getFileByNameAndOwnerId(fileName, appId, ownerId);
         if (file == null) {
             return Response.status(404).entity("File not found.").build();
         }
 
-        // Access validation
         final boolean isFileAccessible =  file.isPublic() || isOwnerAuthenticated(file, userId, userToken);
-
-        // Build response
         if (isFileAccessible) {
+
             final java.io.File targetFile = new java.io.File(file.getFilePath() + file.getFileName());
             final String mimeType = URLConnection.guessContentTypeFromName(targetFile.getName());
             final String contentDisposition = String.format("attachment; filename=%s", targetFile.getName());
-
 
             return Response.ok(targetFile, mimeType)
                 .header("Content-Disposition", contentDisposition)
                 .build();
         } else {
+
             return Response.status(403).entity("Access denied.").build();
-        }
-    }
-
-    private File getFileByNameAndOwnerId(
-        String fileName,
-        String appId,
-        String ownerId
-    ) {
-        return ownerId == null ?
-            fileDao.findOwnerlessFileByName(fileName, appId) :
-            fileDao.findByNameAndOwner(fileName, appId, ownerId);
-    }
-
-    private boolean isOwnerAuthenticated(
-        File file,
-        String userId,
-        String userToken
-    ) {
-        if (userId == null || userToken == null) {
-            return false;
-        } else {
-            return stashTokenStore.isValid(userToken, userId) && file.getFileOwnerId().equals(userId);
         }
     }
 
@@ -177,18 +141,38 @@ public class FileResource {
 
         if (!isOwnerAuthenticated || !isFileFound) { return StashResponse.forbidden(); }
 
-        final java.nio.file.Path path = Paths.get(file.getFilePath() + file.getFileName());
-
         try {
+            final java.nio.file.Path path = Paths.get(file.getFilePath() + file.getFileName());
             Files.delete(path);
-            fileDao.delete(
-                file.getFileId(),
-                appId
-            );
-
+            fileDao.delete(file.getFileId(), appId);
             return StashResponse.ok();
+
         } catch (IOException e) {
             return StashResponse.error(e.getMessage());
+        }
+    }
+
+    // Helper methods
+
+    private File getFileByNameAndOwnerId(
+        String fileName,
+        String appId,
+        String ownerId
+    ) {
+        return ownerId == null ?
+            fileDao.findOwnerlessFileByName(fileName, appId) :
+            fileDao.findByNameAndOwner(fileName, appId, ownerId);
+    }
+
+    private boolean isOwnerAuthenticated(
+        File file,
+        String userId,
+        String userToken
+    ) {
+        if (userId == null || userToken == null) {
+            return false;
+        } else {
+            return stashTokenStore.isValid(userToken, userId) && file.getFileOwnerId().equals(userId);
         }
     }
 
