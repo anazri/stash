@@ -44,6 +44,9 @@ public class FileResource {
         final java.io.File targetFile  = new java.io.File(uploadPath + fileName);
         final String fileId = UUID.randomUUID().toString();
 
+        // TODO: make ownerId optional (if provided can be deleted and updated by owner only, otherwise master)
+        // TODO: make folders so files can be accessed by /files/{fileFolder}/{fileName}
+
 
         try {
             FileUtils.copyInputStreamToFile(inputStream, targetFile);

@@ -1,4 +1,4 @@
-![Stash](https://files.mastodon.social/accounts/avatars/000/222/370/original/e0573970e1117738.png)
+![Stash](https://www.shareicon.net/data/128x128/2016/10/18/845258_box_512x512.png)
 
 # Stash Backend
 
