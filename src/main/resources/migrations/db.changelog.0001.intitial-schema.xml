@@ -104,8 +104,11 @@
             <column name="app_id" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="file_url" type="varchar(256)">
-                <constraints/>
+            <column name="file_path" type="varchar(256)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="file_name" type="varchar(256)">
+                <constraints  nullable="false"/>
             </column>
             <column name="file_owner_id" type="varchar(256)">
                 <constraints/>

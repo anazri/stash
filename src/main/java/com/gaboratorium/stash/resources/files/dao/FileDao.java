@@ -13,12 +13,13 @@ public interface FileDao {
         @Bind("appId") String appId
     );
 
-    @SqlQuery("insert into files values (:fileId, :appId, :fileUrl, :fileOwnerId) returning *;")
+    @SqlQuery("insert into files values (:fileId, :appId, :filePath, :fileName, :fileOwnerId) returning *;")
     @Mapper(FileMapper.class)
     File insert(
         @Bind("fileId") String fileId,
         @Bind("appId") String appId,
-        @Bind("fileUrl") String fileUrl,
+        @Bind("filePath") String filePath,
+        @Bind("fileName") String fileName,
         @Bind("fileOwnerId") String fileOwnerId
     );
 }

@@ -11,7 +11,8 @@ public class FileMapper implements ResultSetMapper<File> {
     public File map(int index, ResultSet r, StatementContext ctx) throws SQLException {
         return new File(
             r.getString("id"),
-            r.getString("file_url"),
+            r.getString("file_path"),
+            r.getString("file_name"),
             r.getString("file_owner_id")
         );
     }

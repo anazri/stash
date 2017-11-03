@@ -33,7 +33,7 @@ public class AppResource {
 
     @POST
     public Response createApp(
-        @Valid @NotNull final CreateAppRequestBody body
+        @NotNull @Valid final CreateAppRequestBody body
     ) {
         final boolean isAppIdFree = appDao.findById(body.appId) == null;
         if (!isAppIdFree) {
@@ -55,7 +55,7 @@ public class AppResource {
     @GET
     @AppAuthenticationRequired
     public Response getApp(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId
     ) throws JsonProcessingException {
 
         final App app = appDao.findById(appId);
@@ -65,7 +65,7 @@ public class AppResource {
     @DELETE
     @AppAuthenticationRequired
     public Response deleteApp(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId
     ) throws Exception {
 
         // TODO: return if query state
@@ -76,7 +76,7 @@ public class AppResource {
     @POST
     @Path("/authenticate")
     public Response authenticateApp(
-        @Valid @NotNull final AuthenticateAppRequestBody body
+        @NotNull @Valid final AuthenticateAppRequestBody body
     ) {
 
         final App app = appDao.findById(body.getAppId());

@@ -37,8 +37,8 @@ public class UserResource {
     @POST
     @AppAuthenticationRequired
     public Response registerUser(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @Valid @NotNull final RegisterUserRequestBody body
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @NotNull @Valid final RegisterUserRequestBody body
     ) {
 
         final boolean isUserIdFree = userDao.findById(body.userId, appId) == null;
@@ -75,8 +75,8 @@ public class UserResource {
     @Path("/{user_id}")
     @AppAuthenticationRequired
     public Response getUser(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @PathParam("user_id") final String userId
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @NotNull @PathParam("user_id") final String userId
     ) {
         final User user = userDao.findById(userId, appId);
         final boolean isUserFound = user != null;
@@ -91,10 +91,10 @@ public class UserResource {
     @AppAuthenticationRequired
     @UserAuthenticationRequired
     public Response updateUser(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @HeaderParam(UserAuthenticationHeaders.USER_ID) final String requesterUserId,
-        @PathParam("user_id") final String targetUserId,
-        @Valid @NotNull final UpdateUserRequestBody body
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @NotNull @HeaderParam(UserAuthenticationHeaders.USER_ID) final String requesterUserId,
+        @NotNull @PathParam("user_id") final String targetUserId,
+        @NotNull @Valid final UpdateUserRequestBody body
     ) {
         // In current implementation users can only update their own profiles
         final boolean isRequesterAlsoTheOwner = requesterUserId.equals(targetUserId);

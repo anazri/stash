@@ -1,3 +1,5 @@
+![Stash](https://files.mastodon.social/accounts/avatars/000/222/370/original/e0573970e1117738.png)
+
 # Stash Backend
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)

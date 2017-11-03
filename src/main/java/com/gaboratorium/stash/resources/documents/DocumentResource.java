@@ -39,10 +39,10 @@ public class DocumentResource {
     @POST
     @AppAuthenticationRequired
     public Response createDocument(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
         @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
         @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) final String userToken,
-        @Valid @NotNull CreateDocumentRequestBody body
+        @NotNull @Valid  CreateDocumentRequestBody body
     ) throws SQLException, JsonProcessingException {
 
         final String documentId = UUID.randomUUID().toString();
@@ -87,8 +87,8 @@ public class DocumentResource {
     @Path("/{id}")
     @AppAuthenticationRequired
     public Response getDocumentById(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @PathParam("id") String documentId
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @NotNull @PathParam("id") String documentId
     ) {
         final Document document = documentDao.findById(documentId, appId);
         final boolean isDocumentNotFound = document == null;
@@ -101,7 +101,7 @@ public class DocumentResource {
     @GET
     @AppAuthenticationRequired
     public Response getDocumentByFilter(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
         @NotNull @QueryParam("key") String key,
         @NotNull @QueryParam("value") String value,
         @QueryParam("keySecondary") String keySecondary,
@@ -129,10 +129,10 @@ public class DocumentResource {
     @UserAuthenticationRequired
     @Path("/{id}")
     public Response updateDocument(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
-        @PathParam("id") String documentId,
-        @Valid @NotNull UpdateDocumentRequestBody body
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @NotNull @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
+        @NotNull @PathParam("id") String documentId,
+        @NotNull @Valid UpdateDocumentRequestBody body
     ) throws SQLException, JsonProcessingException {
 
         final Document document = documentDao.findById(documentId, appId);
@@ -158,9 +158,9 @@ public class DocumentResource {
     @AppAuthenticationRequired
     @UserAuthenticationRequired
     public Response deleteDocument(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
-        @PathParam("id") String documentId
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @NotNull @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
+        @NotNull @PathParam("id") String documentId
     ) {
         final Document document = documentDao.findById(documentId, appId);
         final boolean isDocumentNotFound = document == null;

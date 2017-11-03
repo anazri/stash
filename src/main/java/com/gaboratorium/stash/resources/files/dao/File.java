@@ -7,6 +7,7 @@ import lombok.Getter;
 public class File {
 
     @Getter final private String fileId;
-    @Getter final private String fileUrl;
+    @Getter final private String filePath;
+    @Getter final private String fileName;
     @Getter final private String fileOwnerId;
 }
