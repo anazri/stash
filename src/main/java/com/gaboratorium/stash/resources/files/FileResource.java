@@ -6,12 +6,15 @@ import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationHeaders;
+import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequired;
 import com.gaboratorium.stash.resources.files.dao.File;
 import com.gaboratorium.stash.resources.files.dao.FileDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+
+import javax.print.attribute.standard.Media;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -19,6 +22,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URLConnection;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @Path("/files")
@@ -96,18 +102,17 @@ public class FileResource {
     public Response getFile(
         @NotNull @PathParam("fileName") String fileName,
         @QueryParam("ownerId") String ownerId,
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) String appId,
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) String appId,
         @HeaderParam(UserAuthenticationHeaders.USER_ID) String userId,
         @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) String userToken
     ) {
-        File file;
 
-        // Find file
-        if (ownerId == null) {
-            file = fileDao.findOwnerlessFileByName(fileName, appId);
-        } else {
-            file = fileDao.findByNameAndOwner(fileName, appId, ownerId);
-        }
+
+        final File file = getFileByNameAndOwnerId(
+            fileName,
+            appId,
+            ownerId
+        );
 
         if (file == null) {
             return Response.status(404).entity("File not found.").build();
@@ -131,6 +136,16 @@ public class FileResource {
         }
     }
 
+    private File getFileByNameAndOwnerId(
+        String fileName,
+        String appId,
+        String ownerId
+    ) {
+        return ownerId == null ?
+            fileDao.findOwnerlessFileByName(fileName, appId) :
+            fileDao.findByNameAndOwner(fileName, appId, ownerId);
+    }
+
     private boolean isOwnerAuthenticated(
         File file,
         String userId,
@@ -142,4 +157,39 @@ public class FileResource {
             return stashTokenStore.isValid(userToken, userId) && file.getFileOwnerId().equals(userId);
         }
     }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{fileName}")
+    @AppAuthenticationRequired
+    @UserAuthenticationRequired
+    public Response deleteFile(
+        @NotNull @PathParam("fileName") String fileName,
+        @NotNull @QueryParam("ownerId") String ownerId,
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) String appId,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) String userId,
+        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) String userToken
+    ) {
+
+        final File file = fileDao.findByNameAndOwner(fileName, appId, userId);
+        final boolean isOwnerAuthenticated = ownerId.equals(userId);
+        final boolean isFileFound = file != null;
+
+        if (!isOwnerAuthenticated || !isFileFound) { return StashResponse.forbidden(); }
+
+        final java.nio.file.Path path = Paths.get(file.getFilePath() + file.getFileName());
+
+        try {
+            Files.delete(path);
+            fileDao.delete(
+                file.getFileId(),
+                appId
+            );
+
+            return StashResponse.ok();
+        } catch (IOException e) {
+            return StashResponse.error(e.getMessage());
+        }
+    }
+
 }

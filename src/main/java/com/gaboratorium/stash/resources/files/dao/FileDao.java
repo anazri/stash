@@ -2,6 +2,7 @@ package com.gaboratorium.stash.resources.files.dao;
 
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
+import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
 public interface FileDao {
@@ -37,5 +38,11 @@ public interface FileDao {
         @Bind("fileName") String fileName,
         @Bind("fileOwnerId") String fileOwnerId,
         @Bind("fileIsPublic") boolean isPublic
+    );
+
+    @SqlUpdate("delete from files where id = :fileId and app_id = :appId")
+    void delete(
+        @Bind("fileId") String fileId,
+        @Bind("appId") String appId
     );
 }
