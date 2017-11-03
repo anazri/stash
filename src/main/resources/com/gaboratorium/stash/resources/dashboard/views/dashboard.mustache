@@ -1,6 +1,124 @@
-<html>
-    <body>
-        <h1>Hello, welcome to Stash Backend</h1>
-        <p>Your Stash Backend server is up and running. Please visit the <a href="https://github.com/gaboratorium/stash/wiki">Stash Wiki on GitHub</a> for the Stash Documentation.</p>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Stash Backend</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+</head>
+<body>
+
+<style>
+
+		/* Layouting  */
+
+		.o-page {
+			min-height: 100vh;
+		}
+
+		.col, .col-sm-2 {
+			padding: 0rem;
+		}
+
+		.col-content {
+			padding: 1rem;
+		}
+
+		/* Sidebar */
+
+		.c-sidebar {
+			border-right: lightgray 1px solid;
+		}
+
+		.c-sidebar__menu-item {
+			border-bottom: lightgray 1px solid;
+		}
+
+		.c-sidebar__menu-item:hover {
+			background-color: #f2f7ff;
+		}
+
+		.c-sidebar__menu-item--selected {
+			background-color: #111141;
+			color: white;
+		}
+
+		.c-sidebar__menu-title {
+			margin: 1rem;
+			margin-top: 2rem;
+			margin-bottom: .5rem;
+			text-transform: uppercase;
+			font-weight: bold;
+			color: gray;
+			font-size: .75rem;
+		}
+
+		.c-sidebar__menu-meta {
+			margin-left: 1rem;
+			color: gray;
+			font-size: .8rem;
+		}
+
+		.c-sidebar__menu-meta--first {
+			margin-top: 2rem;
+		}
+
+
+	</style>
+
+<div class="container-fluid o-page">
+    <div class="row o-page">
+        <!-- Navigation -->
+        <div class="col-sm-2 c-sidebar">
+            <ul class="nav flex-column">
+                <li class="c-sidebar__menu-title">
+                    Services
+                </li>
+                <li class="nav-item c-sidebar__menu-item">
+                    <a href="" class="nav-link c-sidebar__menu-item--selected">App settings</a>
+                </li>
+                <li class="nav-item c-sidebar__menu-item">
+                    <a href="" class="nav-link">Users</a>
+                </li>
+                <li class="nav-item c-sidebar__menu-item">
+                    <a href="" class="nav-link">Documents</a>
+                </li>
+                <li class="nav-item c-sidebar__menu-item">
+                    <a href="" class="nav-link">Files</a>
+                </li>
+                <li class="c-sidebar__menu-title">
+                    Settings
+                </li>
+                <li class="nav-item c-sidebar__menu-item">
+                    <a href="" class="nav-link">Documentation</a>
+                </li>
+                <li class="nav-item c-sidebar__menu-item">
+                    <a href="" class="nav-link">Log out</a>
+                </li>
+                <li class="c-sidebar__menu-meta c-sidebar__menu-meta--first">
+                    Stash Backend v0.1.0
+                </li>
+                <li class="c-sidebar__menu-meta">
+                    <a href="https://github.com/gaboratorium/stash">GitHub</a>
+                </li>
+
+            </ul>
+        </div>
+        <!-- Content -->
+        <div class="col col-content">
+
+            <h1>Welcome to Stash Backend</h1>
+            <p>
+                <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam ex, corrupti aliquam consequatur ea tempore unde deserunt ipsam nobis natus, cupiditate ipsum, numquam voluptatibus omnis architecto dolor. Quam, deleniti labore.</span>
+                <span>Provident, quisquam nihil assumenda saepe fugit atque unde consequatur quam perspiciatis obcaecati esse facilis placeat veniam alias magni ad nobis quas culpa aliquam possimus dolorem ab voluptatum quaerat! Numquam, reiciendis!</span>
+                <span>Aliquam illo ut at, molestias beatae ipsam nulla perspiciatis! Similique, facere incidunt ut consectetur, accusantium sunt architecto ipsa quas aliquam sint necessitatibus maiores iste porro? Tenetur voluptate eaque minima dolore!</span>
+                <span>Porro repellat aperiam debitis labore qui nostrum ipsum ad. Quos molestias natus voluptates reprehenderit laboriosam facere nisi debitis quibusdam repellat, error sed assumenda tempore dolor eos. Quibusdam molestias deserunt facere!</span>
+                <span>Aliquid, modi consectetur laborum, velit est error, quasi possimus provident inventore dolorum fugit? Totam amet error sed iusto! Eligendi culpa veritatis facilis cupiditate voluptates nobis dolore illum, ipsam accusantium magni!</span>
+            </p>
+            <img src="https://camo.githubusercontent.com/e2d7cacd3639b5cf19e8a10ae51817c9c07d3844/68747470733a2f2f7777772e736861726569636f6e2e6e65742f646174612f313238783132382f323031362f31302f31382f3834353235385f626f785f353132783531322e706e67" alt="">
+        </div>
+    </div>
+</div>
+</body>
 </html>
