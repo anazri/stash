@@ -113,6 +113,9 @@
             <column name="file_owner_id" type="varchar(256)">
                 <constraints/>
             </column>
+            <column name="file_is_public" type="boolean">
+                <constraints/>
+            </column>
             <column name="created_at" type="datetime" defaultValueDate="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>

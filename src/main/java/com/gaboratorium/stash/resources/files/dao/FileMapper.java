@@ -13,7 +13,8 @@ public class FileMapper implements ResultSetMapper<File> {
             r.getString("id"),
             r.getString("file_path"),
             r.getString("file_name"),
-            r.getString("file_owner_id")
+            r.getString("file_owner_id"),
+            r.getBoolean("file_is_public")
         );
     }
 }

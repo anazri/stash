@@ -13,9 +13,9 @@ public interface FileDao {
         @Bind("appId") String appId
     );
 
-    @SqlQuery("select * from files where file_name = :fileName and app_id = :appId;")
+    @SqlQuery("select * from files where file_name = :fileName and app_id = :appId and file_owner_id is null;")
     @Mapper(FileMapper.class)
-    File findByName(
+    File findOwnerlessFileByName(
         @Bind("fileName") String fileName,
         @Bind("appId") String appId
     );
@@ -28,13 +28,14 @@ public interface FileDao {
         @Bind("fileOwnerId") String fileOwnerId
     );
 
-    @SqlQuery("insert into files values (:fileId, :appId, :filePath, :fileName, :fileOwnerId) returning *;")
+    @SqlQuery("insert into files values (:fileId, :appId, :filePath, :fileName, :fileOwnerId, :fileIsPublic) returning *;")
     @Mapper(FileMapper.class)
     File insert(
         @Bind("fileId") String fileId,
         @Bind("appId") String appId,
         @Bind("filePath") String filePath,
         @Bind("fileName") String fileName,
-        @Bind("fileOwnerId") String fileOwnerId
+        @Bind("fileOwnerId") String fileOwnerId,
+        @Bind("fileIsPublic") boolean isPublic
     );
 }

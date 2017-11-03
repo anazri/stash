@@ -17,7 +17,6 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.net.URLConnection;
 import java.util.UUID;
@@ -42,10 +41,12 @@ public class FileResource {
         @NotNull @Valid @HeaderParam(AppAuthenticationHeaders.APP_ID) String appId, // TODO: Snake notation ?
         @HeaderParam(UserAuthenticationHeaders.USER_ID) String userId,
         @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) String userToken,
+        @Valid @FormDataParam("isPublic") Boolean isPublic,
         @Valid @FormDataParam("ownerId") String ownerId
     )  {
 
         final boolean isOwnerIdProvided = ownerId != null;
+        final boolean isFilePublic = isPublic == null || isPublic;
 
         // Owner validation
         if (isOwnerIdProvided) {
@@ -76,7 +77,8 @@ public class FileResource {
                 appId,
                 uploadPath,
                 fileName,
-                ownerId
+                ownerId,
+                isFilePublic
             );
 
             return StashResponse.ok(file);
@@ -88,24 +90,54 @@ public class FileResource {
 
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    @Path("/{file_name}")
+    @Path("/{fileName}")
     public Response getFile(
-        @NotNull @PathParam("file_name") String fileName,
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) String appId
+        @NotNull @PathParam("fileName") String fileName,
+        @QueryParam("ownerId") String ownerId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) String appId,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) String userId,
+        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) String userToken
     ) {
+        File file;
 
-        final File file = fileDao.findByName(
-            fileName,
-            appId
-        );
+        // Find file
+        if (ownerId == null) {
+            file = fileDao.findOwnerlessFileByName(fileName, appId);
+        } else {
+            file = fileDao.findByNameAndOwner(fileName, appId, ownerId);
+        }
 
-        final java.io.File targetFile = new java.io.File(file.getFilePath() + file.getFileName());
-        final String mimeType = URLConnection.guessContentTypeFromName(targetFile.getName());
-        final String contentDisposition = String.format("attachment; filename=%s", targetFile.getName());
+        if (file == null) {
+            return Response.status(404).entity("File not found.").build();
+        }
+
+        // Access validation
+        final boolean isFileAccessible =  file.isPublic() || isOwnerAuthenticated(file, userId, userToken);
+
+        // Build response
+        if (isFileAccessible) {
+            final java.io.File targetFile = new java.io.File(file.getFilePath() + file.getFileName());
+            final String mimeType = URLConnection.guessContentTypeFromName(targetFile.getName());
+            final String contentDisposition = String.format("attachment; filename=%s", targetFile.getName());
 
 
-        return Response.ok(targetFile, mimeType)
-            .header("Content-Disposition", contentDisposition)
-            .build();
+            return Response.ok(targetFile, mimeType)
+                .header("Content-Disposition", contentDisposition)
+                .build();
+        } else {
+            return Response.status(403).entity("Access denied.").build();
+        }
+    }
+
+    private boolean isOwnerAuthenticated(
+        File file,
+        String userId,
+        String userToken
+    ) {
+        if (userId == null || userToken == null) {
+            return false;
+        } else {
+            return stashTokenStore.isValid(userToken, userId) && file.getFileOwnerId().equals(userId);
+        }
     }
 }
