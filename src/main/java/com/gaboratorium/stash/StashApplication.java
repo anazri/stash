@@ -14,6 +14,7 @@ import com.gaboratorium.stash.resources.files.dao.FileDao;
 import com.gaboratorium.stash.resources.users.UserResource;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
 import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.db.ManagedDataSource;
 import io.dropwizard.jackson.Jackson;
@@ -42,6 +43,7 @@ public class StashApplication extends Application<StashConfiguration> {
     public void initialize(Bootstrap<StashConfiguration> bootstrap) {
         // Bootstrap
         bootstrap.addBundle(new ViewBundle<StashConfiguration>());
+        bootstrap.addBundle(new AssetsBundle("/assets/"));
     }
 
     @Override
