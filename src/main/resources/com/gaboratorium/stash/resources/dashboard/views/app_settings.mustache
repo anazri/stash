@@ -1,0 +1,55 @@
+{{> partials/head }}
+<div class="container-fluid o-page">
+    <div class="row o-page">
+        {{> partials/sidebar }}
+
+        <!-- Content -->
+        <div class="col o-main">
+            <div class="col-content-l o-main--text">
+                <section class="c-section--bordered col-content-l">
+
+                    <!-- App logo -->
+                    <div class="row justify-content-md-center">
+                        <div class="c-avatar">
+                            <i class="fa fa-flag c-avatar__logo" aria-hidden="true"></i>
+                        </div>
+                    </div>
+
+                    <!-- App name-->
+                    <h1 class="c-avatar__title">
+                        Instagram
+                    </h1>
+                    <hr>
+
+                    <!-- App Settings -->
+                    <form>
+                        <div class="form-group">
+                            <label for="app_id"><i class="fa fa-id-badge fa-fw" aria-hidden="true"></i> App ID</label>
+                            <input type="email" class="form-control " id="app_id" placeholder="instagram (App ID cannot be changed)" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="app_name"><i class="fa fa-id-badge fa-fw" aria-hidden="true"></i> App name</label>
+                            <input type="text" class="form-control" id="app_name" value="Instagram">
+                        </div>
+                        <div class="form-group">
+                            <label for="app_description"><i class="fa fa-info-circle fa-fw" aria-hidden="true"></i> App description</label>
+                            <input type="text" class="form-control" id="app_description" value="Upload cats and food pics">
+                        </div>
+                        <div class="form-group">
+                            <label for="app_description"><i class="fa fa-lock fa-fw" aria-hidden="true"></i> App secret</label>
+                            <input type="password" class="form-control" id="app_description" value="Secret placeholder">
+                        </div>
+                        <div class="form-group">
+                            <label for="master_email"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Master e-mail address</label>
+                            <input type="text" class="form-control" id="master_email" value="gaboratorium@gmail.com">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            Update App</button>
+                    </form>
+                </section>
+                <p class="o-text--centered"><a href="">Need more power? Check out the API Documentation.</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{{> partials/footer }}
