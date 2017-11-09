@@ -30,8 +30,18 @@ public class AppResource {
     private final StashTokenStore stashTokenStore;
 
     // Endpoints
+    @POST
+    @Path("/test")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response testRegisterApp(
+        @FormParam("appName") String appName
+    ) {
+        return StashResponse.ok(appName);
+    }
+
 
     @POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED})
     public Response createApp(
         @NotNull @Valid final CreateAppRequestBody body
     ) {

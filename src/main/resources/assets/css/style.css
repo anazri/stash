@@ -261,3 +261,15 @@ section {
 .o-margin--bottom-l {
 	margin-bottom: 2rem;
 }
+
+.c-login__logo {
+	width: 8rem;
+}
+
+.o-text--danger {
+    color: #721c24;
+}
+
+.o-text--success {
+    color: #28a745;
+}

@@ -1,29 +1,82 @@
 {{> partials/head }}
-<div class="container col-content-l c-section--bordered">
+<div class="container col-content-l">
     <div class="o-text--centered">
-        <img src="assets/img/logo.png" class="o-margin--l" alt="">
+        <p class="o-text--danger">{{ message }}</p>
+        <img src="../assets/img/logo.png" class="o-margin--l c-login__logo" alt="">
     </div>
-    <h2 class="form-signin-heading o-text--centered">Create a new App</h2>
-    <h3 class="o-text--centered form-signin__subtitle">Start using the amazing Stash Backend services today</h3>
-    <form class="form-signin" action="/apps" method="post">
+    <h2 class="form-signin-heading o-text--centered">Welcome to Stash Backend</h2>
+    <h3 class="o-text--centered form-signin__subtitle">Start building amazing Apps today</h3>
+    <form class="form-signin" action="/dashboard/register" method="post">
 
         <!-- App -->
 
-        <input type="text" id="appId" class="form-control form_signin__input form_signin__input--top" placeholder="App ID" required autofocus>
-        <input type="text" id="appSecret" class="form-control form_signin__input form_signin__input--middle" placeholder="App secret" required autofocus>
-        <input type="text" id="appName" class="form-control form_signin__input form_signin__input--middle" placeholder="App name" required autofocus>
-        <input type="text" id="appDescription" class="form-control o-margin--bottom-l form_signin__input--bottom" placeholder="App description" required autofocus>
+        <!--appId-->
+        <input
+            type="text"
+            name="appId"
+            id="appId"
+            class="form-control form_signin__input form_signin__input--top"
+            placeholder="App ID"
 
-        <input type="email" id="inputEmail" class="form-control form_signin__input form_signin__input--top" placeholder="Master e-mail address" required autofocus>
-        <input type="password" id="inputPassword" class="form-control form_signin__input o-margin--bottom-l form_signin__input--bottom" placeholder="Master password" required>
+        >
+
+        <!--appSecret-->
+        <input
+            type="text"
+            name="appSecret"
+            id="appSecret"
+            class="form-control form_signin__input form_signin__input--middle"
+            placeholder="App secret"
+            required
+        >
+
+        <!--appName-->
+        <input
+            type="text"
+            name="appName"
+            id="appName"
+            class="form-control form_signin__input form_signin__input--middle"
+            placeholder="App name"
+            required
+        >
+
+        <!--appDescription-->
+        <input
+            type="text"
+            name="appDescription"
+            id="appDescription"
+            class="form-control o-margin--bottom-l form_signin__input--bottom"
+            placeholder="App description"
+            required
+        >
+
+        <!--masterEmail-->
+        <input
+            type="email"
+            name="masterEmail"
+            id="inputEmail"
+            class="form-control form_signin__input form_signin__input--top"
+            placeholder="Master e-mail address"
+            required
+        >
+
+        <!--masterPasswordHash-->
+        <input
+            type="password"
+            name="masterPasswordHash"
+            id="inputPassword"
+            class="form-control form_signin__input o-margin--bottom-l form_signin__input--bottom"
+            placeholder="Master password"
+            required
+        >
 
         <button class="btn btn-lg btn-success btn-block" type="submit">Create new App</button>
     </form>
     <p class="o-text--centered o-margin--null">
-        <a href="/login">Already have an App? Log in now.</a>
+        <a href="login">Already have an App? Log in now.</a>
     </p>
     <p class="o-text--centered">
-        <a href="https://github.com/gaboratorium/stash/wiki">Not sure what you are doing? Check out the docs.</a>
+        <a href="https://github.com/gaboratorium/stash/wiki">Need some help? Check out the docs.</a>
     </p>
 </div>
 {{> partials/footer }}
