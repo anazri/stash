@@ -8,6 +8,8 @@ import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.App;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
+import com.gaboratorium.stash.resources.apps.dao.Master;
+import com.gaboratorium.stash.resources.apps.dao.MasterDao;
 import com.gaboratorium.stash.resources.apps.requests.AuthenticateAppRequestBody;
 import com.gaboratorium.stash.resources.apps.requests.CreateAppRequestBody;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.UUID;
 
 @Path("/apps")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -27,18 +30,10 @@ public class AppResource {
 
     private final ObjectMapper mapper;
     private final AppDao appDao;
+    private final MasterDao masterDao;
     private final StashTokenStore stashTokenStore;
 
     // Endpoints
-    @POST
-    @Path("/test")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response testRegisterApp(
-        @FormParam("appName") String appName
-    ) {
-        return StashResponse.ok(appName);
-    }
-
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED})
@@ -54,10 +49,15 @@ public class AppResource {
                 body.appId,
                 appName,
                 body.appDescription,
-                body.appSecret,
-                body.masterEmail,
-                body.masterPasswordHash
+                body.appSecret
             );
+            final String masterId = UUID.randomUUID().toString();
+           final Master master = masterDao.insert(
+               masterId,
+               body.appId,
+               body.masterEmail,
+               body.masterPasswordHash
+           );
 
             return StashResponse.ok(app);
         }

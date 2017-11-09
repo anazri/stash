@@ -1,15 +1,18 @@
 package com.gaboratorium.stash.resources.dashboard;
 
-import com.gaboratorium.stash.modules.stashResponse.StashResponse;
+import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequired;
+import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.App;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
+import com.gaboratorium.stash.resources.apps.dao.Master;
+import com.gaboratorium.stash.resources.apps.dao.MasterDao;
 import com.gaboratorium.stash.resources.dashboard.views.*;
 import io.dropwizard.views.View;
 import lombok.RequiredArgsConstructor;
-
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 
@@ -19,6 +22,10 @@ import java.net.URI;
 public class DashboardResource {
 
     final private AppDao appDao;
+    final private MasterDao masterDao;
+    private final StashTokenStore stashTokenStore;
+
+    // Public
 
     @GET
     public Response getRoot() {
@@ -34,9 +41,52 @@ public class DashboardResource {
     }
 
     @GET
-    @Path("/dashboard/getting_started")
-    public GettingStartedView getGettingStartedView() {
-        return new GettingStartedView();
+    @Path("dashboard/login")
+    public LoginView getLoginView(
+
+    ) {
+        return new LoginView("");
+    }
+
+    @POST
+    @Path("dashboard/login")
+    public Response getLoginView(
+        @NotNull @FormParam("appId") String appId,
+        @NotNull @FormParam("masterEmail") String masterEmail,
+        @NotNull @FormParam("masterPassword") String masterPassword
+    ) {
+        final Master master = masterDao.findByCredentials(
+            masterEmail,
+            masterPassword,
+            appId
+        );
+
+        final boolean isMasterAuthenticated = master != null;
+
+        if (!isMasterAuthenticated) {
+            final URI uri = URI.create("/dashboard/login");
+            return Response
+                .seeOther(uri)
+                .build();
+        } else {
+            final URI uri = URI.create("/dashboard/getting_started");
+
+            final String masterToken = stashTokenStore.create(master.getMasterId(), StashTokenStore.getHalfAnHourFromNow());
+
+            return Response
+                .seeOther(uri)
+                .cookie(new NewCookie("X-Auth-Master-Id", master.getMasterId()))
+                .cookie(new NewCookie("X-Auth-Master-Token", masterToken))
+                .build();
+        }
+    }
+
+    @GET
+    @Path("dashboard/register")
+    public RegisterView getRegisterView(
+
+    ) {
+        return new RegisterView("");
     }
 
     @POST
@@ -52,9 +102,9 @@ public class DashboardResource {
     ) {
         final boolean isRequestValid =
             !appId.isEmpty() &&
-            !appSecret.isEmpty() &&
-            !masterEmail.isEmpty() &&
-            !masterPasswordHash.isEmpty();
+                !appSecret.isEmpty() &&
+                !masterEmail.isEmpty() &&
+                !masterPasswordHash.isEmpty();
 
         if (!isRequestValid) {
             return new RegisterView("Something went wrong. Please try again.");
@@ -66,15 +116,16 @@ public class DashboardResource {
             appId,
             validatedAppName,
             appDescription,
-            appSecret,
-            masterEmail,
-            masterPasswordHash
+            appSecret
         );
 
         return new LoginView("Your app has been succesfully registered.");
     }
 
+    // Master authentication required
+
     @GET
+    @MasterAuthenticationRequired
     @Path("dashboard/app_settings")
     public AppSettingsView getAppSettingsView(
 
@@ -85,18 +136,12 @@ public class DashboardResource {
     }
 
     @GET
-    @Path("dashboard/login")
-    public LoginView getLoginView(
-
-    ) {
-        return new LoginView("");
+    @MasterAuthenticationRequired
+    @Path("/dashboard/getting_started")
+    public GettingStartedView getGettingStartedView() {
+        return new GettingStartedView();
     }
 
-    @GET
-    @Path("dashboard/register")
-    public RegisterView getRegisterView(
 
-    ) {
-        return new RegisterView("");
-    }
+
 }

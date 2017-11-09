@@ -10,7 +10,5 @@ public class App {
     @Getter final private String appName;
     @Getter final private String appDescription;
     @Getter final private String appSecret;
-    @Getter final private String masterEmail;
-    @Getter final private String masterPasswordHash;
 }
 

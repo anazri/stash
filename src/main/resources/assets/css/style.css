@@ -128,7 +128,7 @@ section {
 	background: linear-gradient(#A19505, #867a06); /* Standard syntax */
 }
 
-.c-pills__pill--purple {
+.c-pills__pill--blue {
 	background-color: #752540;
 	background: -webkit-linear-gradient(#752540, #58122b); /* For Safari 5.1 to 6.0 */
 	background: -o-linear-gradient(#752540, #58122b); /* For Opera 11.1 to 12.0 */

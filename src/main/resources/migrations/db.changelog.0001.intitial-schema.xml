@@ -20,6 +20,20 @@
             <column name="app_secret" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_at" type="datetime" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Masters -->
+
+        <createTable tableName="masters">
+            <column name="id" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="app_id" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
             <column name="master_email" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
@@ -30,6 +44,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
 
         <!-- Users -->
         <createTable tableName="users">

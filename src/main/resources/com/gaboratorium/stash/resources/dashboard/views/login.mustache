@@ -6,11 +6,12 @@
     </div>
     <h2 class="form-signin-heading o-text--centered">Log in to App</h2>
     <h3 class="o-text--centered form-signin__subtitle">Access and manage your data like never before</h3>
-    <form class="form-signin">
-        <label for="inputEmail" class="sr-only">Master e-mail...</label>
-        <input type="email" id="inputEmail" class="form-control form_signin__input form-signin__input--top" placeholder="Master e-mail address" required autofocus>
-        <label for="inputPassword" class="sr-only">App secret...</label>
-        <input type="password" id="inputPassword" class="form-control o-margin--bottom-l  form_signin__input--bottom" placeholder="Master password" required>
+    <form class="form-signin" action="login" method="post">
+
+        <input type="text" name="appId" id="inputAppId" class="form-control form_signin__input form_signin__input--top" placeholder="App ID" required autofocus>
+        <input type="email" name="masterEmail" id="inputEmail" class="form-control form_signin__input form_signin__input--middle" placeholder="Master e-mail address" required autofocus>
+        <input type="password" name="masterPassword" id="inputPassword" class="form-control o-margin--bottom-l  form_signin__input--bottom" placeholder="Master password" required>
+
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in to App</button>
     </form>
     <p class="o-text--centered o-margin--null">

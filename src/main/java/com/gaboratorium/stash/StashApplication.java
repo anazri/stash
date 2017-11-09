@@ -2,10 +2,13 @@ package com.gaboratorium.stash;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequiredFilter;
+import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequired;
+import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequiredFilter;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequiredFilter;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
+import com.gaboratorium.stash.resources.apps.dao.MasterDao;
 import com.gaboratorium.stash.resources.dashboard.DashboardResource;
 import com.gaboratorium.stash.resources.documents.DocumentResource;
 import com.gaboratorium.stash.resources.documents.dao.DocumentDao;
@@ -58,6 +61,7 @@ public class StashApplication extends Application<StashConfiguration> {
 
         // Dao
         final AppDao appDao = dbi.onDemand(AppDao.class);
+        final MasterDao masterDao = dbi.onDemand(MasterDao.class);
         final UserDao userDao = dbi.onDemand(UserDao.class);
         final DocumentDao documentDao = dbi.onDemand(DocumentDao.class);
         final FileDao fileDao = dbi.onDemand(FileDao.class);
@@ -66,6 +70,7 @@ public class StashApplication extends Application<StashConfiguration> {
         final AppResource appResource = new AppResource(
             mapper,
             appDao,
+            masterDao,
             stashTokenStore
         );
 
@@ -88,7 +93,9 @@ public class StashApplication extends Application<StashConfiguration> {
         );
 
         final DashboardResource dashboardResource = new DashboardResource(
-            appDao
+            appDao,
+            masterDao,
+            stashTokenStore
         );
 
         // Run Migrations
@@ -97,6 +104,7 @@ public class StashApplication extends Application<StashConfiguration> {
         // Module registrations
         environment.jersey().register(AppAuthenticationRequiredFilter.class);
         environment.jersey().register(UserAuthenticationRequiredFilter.class);
+        environment.jersey().register(MasterAuthenticationRequiredFilter.class);
         environment.jersey().register(MultiPartFeature.class);
         environment.jersey().register(appResource);
         environment.jersey().register(userResource);
