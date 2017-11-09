@@ -1,5 +1,6 @@
-package com.gaboratorium.stash.resources.dashboard.views;
+package com.gaboratorium.stash.resources.dashboard.views.docs;
 
+import com.gaboratorium.stash.resources.dashboard.views.services.GettingStartedViewModel;
 import io.dropwizard.views.View;
 import lombok.Getter;
 

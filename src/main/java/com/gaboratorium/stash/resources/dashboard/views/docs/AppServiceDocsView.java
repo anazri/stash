@@ -1,11 +1,11 @@
-package com.gaboratorium.stash.resources.dashboard.views;
+package com.gaboratorium.stash.resources.dashboard.views.docs;
 
 import io.dropwizard.views.View;
 import lombok.Getter;
 
 public class AppServiceDocsView extends View {
 
-    @Getterg
+    @Getter
     private final AppSettingsDocsViewModel vm;
 
     public AppServiceDocsView(AppSettingsDocsViewModel vm) {

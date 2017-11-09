@@ -7,6 +7,10 @@ import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.dao.Master;
 import com.gaboratorium.stash.resources.apps.dao.MasterDao;
 import com.gaboratorium.stash.resources.dashboard.views.*;
+import com.gaboratorium.stash.resources.dashboard.views.docs.*;
+import com.gaboratorium.stash.resources.dashboard.views.services.AppSettingsView;
+import com.gaboratorium.stash.resources.dashboard.views.services.AppSettingsViewModel;
+import com.gaboratorium.stash.resources.dashboard.views.services.GettingStartedViewModel;
 import io.dropwizard.views.View;
 import lombok.RequiredArgsConstructor;
 import javax.validation.constraints.NotNull;
@@ -179,5 +183,33 @@ public class DashboardResource {
             app
         );
         return new UserServiceDocsView(model);
+    }
+
+    @GET
+    @MasterAuthenticationRequired
+    @Path("/dashboard/docs/document_service")
+    public DocumentServiceDocsView getDocumentServiceDocsView(
+        @CookieParam("X-Auth-Master-Id") String masterId
+    ) {
+        final Master master = masterDao.findById(masterId);
+        final App app = appDao.findById(master.getAppId());
+        final DocumentServiceDocsViewModel model = new DocumentServiceDocsViewModel(
+            app
+        );
+        return new DocumentServiceDocsView(model);
+    }
+
+    @GET
+    @MasterAuthenticationRequired
+    @Path("/dashboard/docs/file_service")
+    public FileServiceDocsView getFileServiceDocsView(
+        @CookieParam("X-Auth-Master-Id") String masterId
+    ) {
+        final Master master = masterDao.findById(masterId);
+        final App app = appDao.findById(master.getAppId());
+        final FileServiceDocsViewModel model = new FileServiceDocsViewModel(
+            app
+        );
+        return new FileServiceDocsView(model);
     }
 }
