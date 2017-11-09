@@ -69,7 +69,7 @@ public class DashboardResource {
                 .seeOther(uri)
                 .build();
         } else {
-            final URI uri = URI.create("/dashboard/getting_started");
+            final URI uri = URI.create("/dashboard/docs/getting_started");
 
             final String masterToken = stashTokenStore.create(master.getMasterId(), StashTokenStore.getHalfAnHourFromNow());
 
@@ -127,21 +127,57 @@ public class DashboardResource {
     @GET
     @MasterAuthenticationRequired
     @Path("dashboard/app_settings")
-    public AppSettingsView getAppSettingsView(
-
+    public AppSettingsView getAppSettingsView (
+        @CookieParam("X-Auth-Master-Id") String masterId
     ) {
-        final App app = appDao.findById("spotify");
-        final AppSettingsViewModel model = new AppSettingsViewModel(app);
+        final Master master = masterDao.findById(masterId);
+        final App app = appDao.findById(master.getAppId());
+        final AppSettingsViewModel model = new AppSettingsViewModel(
+            app,
+            master
+        );
         return new AppSettingsView(model);
     }
 
     @GET
     @MasterAuthenticationRequired
-    @Path("/dashboard/getting_started")
-    public GettingStartedView getGettingStartedView() {
-        return new GettingStartedView();
+    @Path("/dashboard/docs/getting_started")
+    public GettingStartedView getGettingStartedView(
+        @CookieParam("X-Auth-Master-Id") String masterId
+    ) {
+        final Master master = masterDao.findById(masterId);
+        final App app = appDao.findById(master.getAppId());
+        final GettingStartedViewModel model = new GettingStartedViewModel(
+            app
+        );
+        return new GettingStartedView(model);
     }
 
+    @GET
+    @MasterAuthenticationRequired
+    @Path("/dashboard/docs/app_service")
+    public AppServiceDocsView getAppSettingsDocsView(
+        @CookieParam("X-Auth-Master-Id") String masterId
+    ) {
+        final Master master = masterDao.findById(masterId);
+        final App app = appDao.findById(master.getAppId());
+        final AppSettingsDocsViewModel model = new AppSettingsDocsViewModel(
+            app
+        );
+        return new AppServiceDocsView(model);
+    }
 
-
+    @GET
+    @MasterAuthenticationRequired
+    @Path("/dashboard/docs/user_service")
+    public UserServiceDocsView getUserServiceDocsView(
+        @CookieParam("X-Auth-Master-Id") String masterId
+    ) {
+        final Master master = masterDao.findById(masterId);
+        final App app = appDao.findById(master.getAppId());
+        final UserServiceDocsViewModel model = new UserServiceDocsViewModel(
+            app
+        );
+        return new UserServiceDocsView(model);
+    }
 }

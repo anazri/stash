@@ -1,9 +1,15 @@
 package com.gaboratorium.stash.resources.dashboard.views;
 
 import io.dropwizard.views.View;
+import lombok.Getter;
 
 public class GettingStartedView extends View {
-    public GettingStartedView() {
+
+    @Getter
+    private GettingStartedViewModel vm;
+
+    public GettingStartedView(GettingStartedViewModel vm) {
         super("getting_started.mustache");
+        this.vm = vm;
     }
 }

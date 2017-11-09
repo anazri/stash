@@ -95,9 +95,8 @@ section {
 
 .c-pills__pill {
 	display: inline-block;
-	padding: 2rem;
-	color: #fff;
-	background-color: salmon;
+	padding: 1.8rem;
+	border: 1px solid;
 	margin-right: 1rem;
 	width: 200px;
 	text-align: center;
