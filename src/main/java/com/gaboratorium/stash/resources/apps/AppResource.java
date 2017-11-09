@@ -45,7 +45,8 @@ public class AppResource {
                 appName,
                 body.appDescription,
                 body.appSecret,
-                body.masterEmail
+                body.masterEmail,
+                body.masterPasswordHash
             );
 
             return StashResponse.ok(app);

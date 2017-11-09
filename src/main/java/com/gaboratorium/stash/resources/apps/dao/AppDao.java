@@ -13,14 +13,15 @@ public interface AppDao {
         @Bind("appId") String appId
     );
 
-    @SqlQuery("insert into apps values (:appId, :appName, :appDescription, :appSecret, :masterEmail) returning *;")
+    @SqlQuery("insert into apps values (:appId, :appName, :appDescription, :appSecret, :masterEmail, :masterPasswordHash) returning *;")
     @Mapper(AppMapper.class)
     App insert(
         @Bind("appId") String appId,
         @Bind("appName") String appName,
         @Bind("appDescription") String appDescription,
         @Bind("appSecret") String appSecret,
-        @Bind("masterEmail") String masterEmail
+        @Bind("masterEmail") String masterEmail,
+        @Bind("masterPasswordHash") String masterPasswordHash
     );
 
     @SqlUpdate("delete from apps where id = :appId;")

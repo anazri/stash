@@ -13,7 +13,8 @@ public class AppMapper implements ResultSetMapper<App> {
             resultSet.getString("app_name"),
             resultSet.getString("app_description"),
             resultSet.getString("app_secret"),
-            resultSet.getString("master_email")
+            resultSet.getString("master_email"),
+            resultSet.getString("master_password_hash")
         );
     }
 }

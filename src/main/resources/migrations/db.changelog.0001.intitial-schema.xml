@@ -23,6 +23,9 @@
             <column name="master_email" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
+            <column name="master_password_hash" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
             <column name="created_at" type="datetime" defaultValueDate="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>

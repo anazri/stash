@@ -18,6 +18,9 @@ public class CreateAppRequestBody {
     @JsonProperty @NotNull @Getter
     public String masterEmail;
 
+    @JsonProperty @NotNull @Getter
+    public String masterPasswordHash;
+
     @JsonProperty @Getter
     public String appName;
 
