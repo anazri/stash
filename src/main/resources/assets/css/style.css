@@ -193,3 +193,71 @@ section {
 .o-image--article {
 	margin-bottom: 2rem;
 }
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form_signin__input {
+	margin-bottom: -1px;
+}
+
+.form_signin__input--top {
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+.form_signin__input--bottom {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+}
+
+.form_signin__input--middle {
+	border-radius: 0px;
+}
+
+.form-signin__subtitle {
+	color: gray;
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
+}
+
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+
+.form-signin .checkbox {
+    font-weight: 400;
+}
+
+.form-signin .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+
+
+.o-margin--l {
+	margin: 2rem;
+}
+
+.o-margin--null {
+	margin: 0;
+}
+
+.o-margin--bottom {
+	margin-bottom: 1rem;
+}
+
+.o-margin--bottom-l {
+	margin-bottom: 2rem;
+}

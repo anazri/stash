@@ -87,7 +87,9 @@ public class StashApplication extends Application<StashConfiguration> {
             stashTokenStore
         );
 
-        final DashboardResource dashboardResource = new DashboardResource();
+        final DashboardResource dashboardResource = new DashboardResource(
+            appDao
+        );
 
         // Run Migrations
         runDatabaseMigrations(environment, dataSourceFactory);
