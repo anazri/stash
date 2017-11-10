@@ -51,8 +51,10 @@ public class AppResource {
                 body.appDescription,
                 body.appSecret
             );
-            final String masterId = UUID.randomUUID().toString();
-           final Master master = masterDao.insert(
+
+           final String masterId = UUID.randomUUID().toString();
+
+            final Master master = masterDao.insert(
                masterId,
                body.appId,
                body.masterEmail,

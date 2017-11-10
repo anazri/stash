@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.UUID;
 
 @Path("/")
 @Produces(MediaType.TEXT_HTML)
@@ -121,6 +122,15 @@ public class DashboardResource {
             validatedAppName,
             appDescription,
             appSecret
+        );
+
+        final String masterId = UUID.randomUUID().toString();
+
+        masterDao.insert(
+            masterId,
+            appId,
+            masterEmail,
+            masterPasswordHash
         );
 
         return new LoginView("Your app has been succesfully registered.");
