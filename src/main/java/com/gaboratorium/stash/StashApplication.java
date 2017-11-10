@@ -1,6 +1,7 @@
 package com.gaboratorium.stash;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequiredFilter;
 import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequired;
 import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequiredFilter;
@@ -36,7 +37,9 @@ import java.sql.SQLException;
 
 public class StashApplication extends Application<StashConfiguration> {
 
-    private ObjectMapper mapper = Jackson.newObjectMapper();
+    private ObjectMapper mapper = Jackson
+        .newObjectMapper()
+        .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
 
     public static void main(String[] args) throws Exception {
         new StashApplication().run(args);
