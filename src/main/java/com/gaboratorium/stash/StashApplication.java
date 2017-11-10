@@ -94,6 +94,7 @@ public class StashApplication extends Application<StashConfiguration> {
 
         final DashboardResource dashboardResource = new DashboardResource(
             appDao,
+            userDao,
             masterDao,
             stashTokenStore
         );

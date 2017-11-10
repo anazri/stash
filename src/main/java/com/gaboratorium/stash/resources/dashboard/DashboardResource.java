@@ -1,5 +1,6 @@
 package com.gaboratorium.stash.resources.dashboard;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequired;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.App;
@@ -9,6 +10,9 @@ import com.gaboratorium.stash.resources.apps.dao.MasterDao;
 import com.gaboratorium.stash.resources.dashboard.views.*;
 import com.gaboratorium.stash.resources.dashboard.views.docs.*;
 import com.gaboratorium.stash.resources.dashboard.views.services.*;
+import com.gaboratorium.stash.resources.users.dao.User;
+import com.gaboratorium.stash.resources.users.dao.UserDao;
+import io.dropwizard.jackson.Jackson;
 import io.dropwizard.views.View;
 import lombok.RequiredArgsConstructor;
 import javax.validation.constraints.NotNull;
@@ -17,6 +21,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 @Path("/")
@@ -25,6 +31,7 @@ import java.util.UUID;
 public class DashboardResource {
 
     final private AppDao appDao;
+    final private UserDao userDao;
     final private MasterDao masterDao;
     private final StashTokenStore stashTokenStore;
 
@@ -156,12 +163,20 @@ public class DashboardResource {
     @Path("dashboard/users")
     public UsersView getUsersView(
         @CookieParam("X-Auth-Master-Id") String masterId
-    ) {
+    ) throws JsonProcessingException {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
+        final List<User> users = userDao.findByAppId(app.getAppId());
+        final Integer numberOfUsers = users.size();
+
+        // final String users = Jackson.newObjectMapper().writeValueAsString(userList);
+
         final UsersViewModel model = new UsersViewModel(
-            app
+            app,
+            users,
+            numberOfUsers
         );
+
         return new UsersView(model);
     }
 

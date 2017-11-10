@@ -5,6 +5,7 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 import java.sql.Timestamp;
+import java.util.List;
 
 public interface UserDao {
 
@@ -21,6 +22,13 @@ public interface UserDao {
     @Mapper(UserMapper.class)
     User findByUserEmail(
         @Bind("userEmail") String userEmail,
+        @Bind("appId") String appId
+    );
+
+    // Get by app ID
+    @SqlQuery("select * from users where app_id = :appId;")
+    @Mapper(UserMapper.class)
+    List<User> findByAppId(
         @Bind("appId") String appId
     );
 
