@@ -3,18 +3,34 @@
     <div class="row o-page">
         {{> ../partials/sidebar }}
 
-        <!-- Content -->
         <div class="col o-main">
-            <div class="col-content-l o-main--text">
-                <section class="c-section--bordered col-content-l">
+            <div class="col-content-l">
 
-                    <h2>Document service</h2>
-                    <p>Document service will go here.</p>
+                <section>
+                    <h1>Documents</h1>
+                    <p>Currently your App has {{ vm.numberOfDocuments }} documents.</p>
+
+                    {{#vm.documents}}
+                    <div class="c-document">
+                        <div class="c-document__json col-content">
+                            {{ documentContent }}
+                        </div>
+                        <div class="c-document__meta">
+                            <ul class="c-document__meta-list">
+                                <li class="c-document__meta-list-elem"><span class="o-text--bold">DocumentID:</span> {{ documentId }}</li>
+                                <li class="c-document__meta-list-elem"><span class="o-text--bold">Created at:</span> {{ documentCreatedAt }}</li>
+                                <li class="c-document__meta-list-elem"><span class="o-text--bold">Owner ID:</span> {{ documentOwnerId }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    {{/vm.documents}}
 
                 </section>
-                <p class="o-text--centered"><a href="">Need more power? Check out the API Documentation.</a></p>
             </div>
+
+
         </div>
+
     </div>
 </div>
 {{> ../partials/footer }}

@@ -10,6 +10,8 @@ import com.gaboratorium.stash.resources.apps.dao.MasterDao;
 import com.gaboratorium.stash.resources.dashboard.views.*;
 import com.gaboratorium.stash.resources.dashboard.views.docs.*;
 import com.gaboratorium.stash.resources.dashboard.views.services.*;
+import com.gaboratorium.stash.resources.documents.dao.Document;
+import com.gaboratorium.stash.resources.documents.dao.DocumentDao;
 import com.gaboratorium.stash.resources.users.dao.User;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
 import io.dropwizard.jackson.Jackson;
@@ -33,6 +35,8 @@ public class DashboardResource {
     final private AppDao appDao;
     final private UserDao userDao;
     final private MasterDao masterDao;
+    final private DocumentDao documentDao;
+
     private final StashTokenStore stashTokenStore;
 
     // Public
@@ -188,9 +192,15 @@ public class DashboardResource {
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
+        final List<Document> documents = documentDao.findByAppId(app.getAppId());
+        final Integer numberOfDocuments = documents.size();
+
         final DocumentsViewModel model = new DocumentsViewModel(
-            app
+            app,
+            documents,
+            numberOfDocuments
         );
+
         return new DocumentsView(model);
     }
 
@@ -284,7 +294,7 @@ public class DashboardResource {
     public Response logout(
 
     ) {
-        final URI uri = URI.create("/dashboard/gin");
+        final URI uri = URI.create("/dashboard/login");
         return Response.seeOther(uri)
             .header("Set-Cookie", "X-Auth-Master-Token=deleted;Domain=.example.com;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
             .header("Set-Cookie", "X-Auth-Master-Id=deleted;Domain=.example.com;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")

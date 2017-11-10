@@ -96,6 +96,7 @@ public class StashApplication extends Application<StashConfiguration> {
             appDao,
             userDao,
             masterDao,
+            documentDao,
             stashTokenStore
         );
 

@@ -190,6 +190,10 @@ section {
 	text-align: center;
 }
 
+.o-text--bold {
+	font-weight: bold;
+}
+
 .o-image--article {
 	margin-bottom: 2rem;
 }
@@ -272,4 +276,27 @@ section {
 
 .o-text--success {
     color: #28a745;
+}
+
+.c-document {
+	border: 1px solid lightgray;
+	margin-bottom: 2rem;
+}
+
+
+.c-document__json {
+	background-color: rgb(238, 238, 238);
+	color: darkred;
+}
+
+.c-document__meta-list {
+	display: flex;
+	justify-content: flex-start;
+	margin: 0rem;
+	padding: 1rem;
+}
+
+.c-document__meta-list-elem {
+	list-style-type: none;
+	margin-right: 1rem;
 }

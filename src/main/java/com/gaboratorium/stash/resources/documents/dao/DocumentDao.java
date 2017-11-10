@@ -40,6 +40,12 @@ public interface DocumentDao {
         @Bind("valueSecondary") String valueSecondary
     );
 
+    @SqlQuery("select * from documents where app_id = :appId;")
+    @Mapper(DocumentMapper.class)
+    List<Document> findByAppId(
+        @Bind("appId") String appId
+    );
+
     @SqlQuery("insert into documents values (:documentId, :appId, :documentContent, :documentOwnerId) returning *;")
     @Mapper(DocumentMapper.class)
     Document insert(
