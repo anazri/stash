@@ -100,7 +100,7 @@ public class DocumentResource {
 
     @GET
     @AppAuthenticationRequired
-    public Response getDocumentByFilter(
+    public Response queryDocument(
         @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
         @NotNull @QueryParam("key") String key,
         @NotNull @QueryParam("value") String value,
