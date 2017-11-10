@@ -8,9 +8,7 @@ import com.gaboratorium.stash.resources.apps.dao.Master;
 import com.gaboratorium.stash.resources.apps.dao.MasterDao;
 import com.gaboratorium.stash.resources.dashboard.views.*;
 import com.gaboratorium.stash.resources.dashboard.views.docs.*;
-import com.gaboratorium.stash.resources.dashboard.views.services.AppSettingsView;
-import com.gaboratorium.stash.resources.dashboard.views.services.AppSettingsViewModel;
-import com.gaboratorium.stash.resources.dashboard.views.services.GettingStartedViewModel;
+import com.gaboratorium.stash.resources.dashboard.views.services.*;
 import io.dropwizard.views.View;
 import lombok.RequiredArgsConstructor;
 import javax.validation.constraints.NotNull;
@@ -140,7 +138,7 @@ public class DashboardResource {
 
     @GET
     @MasterAuthenticationRequired
-    @Path("dashboard/app_settings")
+    @Path("dashboard/app")
     public AppSettingsView getAppSettingsView (
         @CookieParam("X-Auth-Master-Id") String masterId
     ) {
@@ -151,6 +149,20 @@ public class DashboardResource {
             master
         );
         return new AppSettingsView(model);
+    }
+
+    @GET
+    @MasterAuthenticationRequired
+    @Path("dashboard/users")
+    public UserServiceView getUserServiceView (
+        @CookieParam("X-Auth-Master-Id") String masterId
+    ) {
+        final Master master = masterDao.findById(masterId);
+        final App app = appDao.findById(master.getAppId());
+        final UserServiceViewModel model = new UserServiceViewModel(
+            app
+        );
+        return new UserServiceView(model);
     }
 
     @GET
