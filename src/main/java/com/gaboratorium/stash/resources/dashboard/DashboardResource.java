@@ -139,30 +139,58 @@ public class DashboardResource {
     @GET
     @MasterAuthenticationRequired
     @Path("dashboard/app")
-    public AppSettingsView getAppSettingsView (
+    public AppView getAppView(
         @CookieParam("X-Auth-Master-Id") String masterId
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
-        final AppSettingsViewModel model = new AppSettingsViewModel(
+        final AppViewModel model = new AppViewModel(
             app,
             master
         );
-        return new AppSettingsView(model);
+        return new AppView(model);
     }
 
     @GET
     @MasterAuthenticationRequired
     @Path("dashboard/users")
-    public UserServiceView getUserServiceView (
+    public UsersView getUsersView(
         @CookieParam("X-Auth-Master-Id") String masterId
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
-        final UserServiceViewModel model = new UserServiceViewModel(
+        final UsersViewModel model = new UsersViewModel(
             app
         );
-        return new UserServiceView(model);
+        return new UsersView(model);
+    }
+
+    @GET
+    @MasterAuthenticationRequired
+    @Path("dashboard/documents")
+    public DocumentsView getDocumentsView (
+        @CookieParam("X-Auth-Master-Id") String masterId
+    ) {
+        final Master master = masterDao.findById(masterId);
+        final App app = appDao.findById(master.getAppId());
+        final DocumentsViewModel model = new DocumentsViewModel(
+            app
+        );
+        return new DocumentsView(model);
+    }
+
+    @GET
+    @MasterAuthenticationRequired
+    @Path("dashboard/files")
+    public FilesView getFilesView (
+        @CookieParam("X-Auth-Master-Id") String masterId
+    ) {
+        final Master master = masterDao.findById(masterId);
+        final App app = appDao.findById(master.getAppId());
+        final FilesViewModel model = new FilesViewModel(
+            app
+        );
+        return new FilesView(model);
     }
 
     @GET

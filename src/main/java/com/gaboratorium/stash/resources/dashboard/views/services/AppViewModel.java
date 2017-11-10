@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 
 @Data
-public class AppSettingsViewModel {
+public class AppViewModel {
 
     @Getter
     private final App app;
