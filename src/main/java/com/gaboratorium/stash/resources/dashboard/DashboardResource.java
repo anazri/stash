@@ -212,4 +212,17 @@ public class DashboardResource {
         );
         return new FileServiceDocsView(model);
     }
+
+    @GET
+    @MasterAuthenticationRequired
+    @Path("/dashboard/logout")
+    public Response logout(
+
+    ) {
+        final URI uri = URI.create("/dashboard/gin");
+        return Response.seeOther(uri)
+            .header("Set-Cookie", "X-Auth-Master-Token=deleted;Domain=.example.com;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
+            .header("Set-Cookie", "X-Auth-Master-Id=deleted;Domain=.example.com;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
+            .build();
+    }
 }
