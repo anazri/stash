@@ -5,6 +5,8 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
 
+import java.util.List;
+
 public interface FileDao {
 
     @SqlQuery("select * from files where id = :fileId and app_id = :appId;")
@@ -27,6 +29,12 @@ public interface FileDao {
         @Bind("fileName") String fileName,
         @Bind("appId") String appId,
         @Bind("fileOwnerId") String fileOwnerId
+    );
+
+    @SqlQuery("select * from files where app_id = :appId;")
+    @Mapper(FileMapper.class)
+    List<File> findByAppId(
+        @Bind("appId") String appId
     );
 
     @SqlQuery("insert into files values (:fileId, :appId, :filePath, :fileName, :fileOwnerId, :fileIsPublic) returning *;")

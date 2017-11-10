@@ -17,6 +17,10 @@ section {
 	padding: 0rem;
 }
 
+.col-content-s {
+	padding: .5rem;
+}
+
 .col-content {
 	padding: 1rem;
 }
@@ -194,6 +198,10 @@ section {
 	font-weight: bold;
 }
 
+.o-text--block {
+    display: block;
+}
+
 .o-image--article {
 	margin-bottom: 2rem;
 }
@@ -299,4 +307,57 @@ section {
 .c-document__meta-list-elem {
 	list-style-type: none;
 	margin-right: 1rem;
+}
+
+
+.c-files {
+	display: flex;
+}
+
+.c-files__file {
+	border: 1px solid lightgray;
+	border-radius: 2px;
+	margin-right: 2rem;
+	margin-bottom: 2rem;
+	width: 270px;
+}
+
+.c-files__file-logo {
+	background-color: rgb(238, 238, 238);
+	color: darkgray;
+	height: 120px;
+	display: flex;
+	font-size: 3rem;
+}
+
+.c-files__file-logo-icon {
+	margin: auto;
+}
+
+.c-files__file-title {
+	background-color: white;
+	text-align: center;
+	padding: .5rem;
+	border-top: 1px solid lightgray;
+}
+
+.o-text--align-left {
+	text-align: left;
+}
+
+.o-grid {
+	display: flex;
+	width: 100%;
+}
+
+.o-grid--align-around {
+	justify-content: space-around
+}
+
+.o-border--top {
+	border-top: 1px solid lightgray;
+}
+
+.o-border--right {
+	border-right: 1px solid lightgray;
 }

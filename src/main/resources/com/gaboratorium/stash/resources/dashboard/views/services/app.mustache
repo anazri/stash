@@ -29,25 +29,26 @@
                         </div>
                         <div class="form-group">
                             <label for="app_name"><i class="fa fa-id-badge fa-fw" aria-hidden="true"></i> App name</label>
-                            <input type="text" class="form-control" id="app_name" value="{{ vm.app.appName }}">
+                            <input type="text" class="form-control" id="app_name" value="{{ vm.app.appName }}" disabled>
                         </div>
                         <div class="form-group">
                             <label for="app_description"><i class="fa fa-info-circle fa-fw" aria-hidden="true"></i> App description</label>
-                            <input type="text" class="form-control" id="app_description" value="{{ vm.app.appDescription }}">
+                            <input type="text" class="form-control" id="app_description" value="{{ vm.app.appDescription }}" disabled>
                         </div>
                         <div class="form-group">
                             <label for="app_secret"><i class="fa fa-lock fa-fw" aria-hidden="true"></i> App secret</label>
-                            <input type="password" class="form-control" id="app_secret" value="{{ vm.app.appSecret }}">
+                            <input type="password" class="form-control" id="app_secret" value="{{ vm.app.appSecret }}" disabled>
                         </div>
                         <div class="form-group">
                             <label for="master_email"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Master e-mail address</label>
-                            <input type="text" class="form-control" id="master_email" value="{{ vm.master.masterEmail }}">
+                            <input type="text" class="form-control" id="master_email" value="{{ vm.master.masterEmail }}" disabled>
                         </div>
-                        <button type="submit" class="btn btn-primary">
-                            Update App</button>
                     </form>
                 </section>
-                <p class="o-text--centered"><a href="">Need more power? Check out the API Documentation.</a></p>
+                <p class="o-text--centered">
+                    <span class="o-text--block">Need help with updating your App data?</span>
+                    <a href="/dashboard/docs/app_service">Please have a look at the App Service documentation.</a>
+                </p>
             </div>
         </div>
     </div>

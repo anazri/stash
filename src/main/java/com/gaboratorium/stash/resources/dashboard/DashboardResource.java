@@ -12,6 +12,8 @@ import com.gaboratorium.stash.resources.dashboard.views.docs.*;
 import com.gaboratorium.stash.resources.dashboard.views.services.*;
 import com.gaboratorium.stash.resources.documents.dao.Document;
 import com.gaboratorium.stash.resources.documents.dao.DocumentDao;
+import com.gaboratorium.stash.resources.files.dao.File;
+import com.gaboratorium.stash.resources.files.dao.FileDao;
 import com.gaboratorium.stash.resources.users.dao.User;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
 import io.dropwizard.jackson.Jackson;
@@ -36,6 +38,7 @@ public class DashboardResource {
     final private UserDao userDao;
     final private MasterDao masterDao;
     final private DocumentDao documentDao;
+    final private FileDao fileDao;
 
     private final StashTokenStore stashTokenStore;
 
@@ -212,9 +215,16 @@ public class DashboardResource {
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
+        final List<File> files = fileDao.findByAppId(app.getAppId());
+        final Integer numberOfFiles = files.size();
+
         final FilesViewModel model = new FilesViewModel(
-            app
+            app,
+            files,
+            numberOfFiles
         );
+
+
         return new FilesView(model);
     }
 

@@ -3,16 +3,39 @@
     <div class="row o-page">
         {{> ../partials/sidebar }}
 
-        <!-- Content -->
         <div class="col o-main">
-            <div class="col-content-l o-main--text">
-                <section class="c-section--bordered col-content-l">
+            <div class="col-content-l">
 
-                    <h2>File service</h2>
-                    <p>File service will go here.</p>
+                <section>
+                    <h1>Files</h1>
+                    <p>Currently your App is storing {{ vm.numberOfFiles }} files.</p>
+
+                    <div class="c-files">
+                    {{#vm.files}}
+                        <div class="c-files__file">
+                            <a href="{{filePath}}{{fileName}}">
+                                <div class="c-files__file-logo">
+                                    <i class="fa fa-file-o c-files__file-logo-icon" aria-hidden="true"></i>
+                                </div>
+                            </a>
+                            <div class="c-files__file-title">
+                                <span class="o-text--bold">{{ fileName }}</span>
+                            </div>
+                            <div class="o-grid o-grid--align-around o-border--top">
+                                <div class="o-grid col-content-s o-text--bold o-border--right">Owner</div>
+                                <div class="o-grid col-content-s">{{ fileOwnerId }}</div>
+
+                            </div>
+                            <div class="o-grid o-grid--align-around o-border--top">
+                                <div class="o-grid col-content-s o-text--bold o-border--right">Public</div>
+                                <div class="o-grid col-content-s">{{ isPublic }}</div>
+
+                            </div>
+                        </div>
+                    {{/vm.files}}
+                    </div>
 
                 </section>
-                <p class="o-text--centered"><a href="">Need more power? Check out the API Documentation.</a></p>
             </div>
         </div>
     </div>
