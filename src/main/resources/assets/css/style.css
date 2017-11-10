@@ -361,3 +361,14 @@ section {
 .o-border--right {
 	border-right: 1px solid lightgray;
 }
+
+pre {
+    background-color: #e9ecef;
+    padding: .5rem;
+    color: darkred;
+}
+
+h3, h4 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+}
