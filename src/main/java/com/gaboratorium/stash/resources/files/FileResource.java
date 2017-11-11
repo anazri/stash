@@ -32,7 +32,8 @@ public class FileResource {
     private final FileDao fileDao;
     private final StashTokenStore stashTokenStore;
 
-    private final String uploadPath = "C:/Users/gaboratorium/Desktop/";
+    // private final String uploadPath = "C:/Users/gaboratorium/Desktop/";
+    private final String uploadPath = "";
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)

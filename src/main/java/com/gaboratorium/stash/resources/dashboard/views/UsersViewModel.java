@@ -1,4 +1,4 @@
-package com.gaboratorium.stash.resources.dashboard.views.services;
+package com.gaboratorium.stash.resources.dashboard.views;
 
 import com.gaboratorium.stash.resources.apps.dao.App;
 import com.gaboratorium.stash.resources.users.dao.User;

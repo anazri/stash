@@ -1,4 +1,4 @@
-package com.gaboratorium.stash.resources.dashboard.views.docs;
+package com.gaboratorium.stash.resources.dashboard.views;
 
 import io.dropwizard.views.View;
 import lombok.Getter;

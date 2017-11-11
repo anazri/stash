@@ -52,7 +52,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="app_id" type="varchar(256)">
-                <constraints references="apps(id)" foreignKeyName="app_id" nullable="false"/>
+                <constraints primaryKey="true" references="apps(id)" foreignKeyName="app_id" nullable="false"/>
             </column>
             <column name="user_email" type="varchar(256)">
                 <constraints nullable="false"/>
@@ -101,7 +101,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="app_id" type="varchar(256)">
-                <constraints nullable="false"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="document_content" type="jsonb">
                 <constraints/>
@@ -120,7 +120,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="app_id" type="varchar(256)">
-                <constraints nullable="false"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="file_path" type="varchar(256)">
                 <constraints  nullable="false"/>
