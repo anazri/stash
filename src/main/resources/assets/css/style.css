@@ -318,6 +318,7 @@ section {
 
 .c-files {
 	display: flex;
+	flex-wrap: wrap;
 }
 
 .c-files__file {
@@ -326,6 +327,10 @@ section {
 	margin-right: 2rem;
 	margin-bottom: 2rem;
 	width: 270px;
+}
+
+.c-files__file:hover {
+    border-color: #007bff;
 }
 
 .c-files__file-logo {

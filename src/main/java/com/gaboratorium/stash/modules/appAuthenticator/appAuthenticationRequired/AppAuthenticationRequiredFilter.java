@@ -5,6 +5,8 @@ import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import liquibase.util.StringUtils;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
 
 @AppAuthenticationRequired
@@ -21,10 +23,29 @@ public class AppAuthenticationRequiredFilter implements ContainerRequestFilter {
         final String errorMsg =
             "App authentication failed because auth token was either not provided, corrupted or expired.";
 
-        if (isParamListProvided) {
+        final boolean isMasterAuthenticated = isMasterAuthenticated(requestContext);
+
+        if (isParamListProvided && !isMasterAuthenticated) {
             requestContext.abortWith(StashResponse.forbidden(errorMsg));
-        } else if (!stashTokenStore.isValid(token, appId)) {
+        } else if (!stashTokenStore.isValid(token, appId) && !isMasterAuthenticated) {
             requestContext.abortWith(StashResponse.forbidden(errorMsg));
+        }
+    }
+
+    private boolean isMasterAuthenticated(
+        ContainerRequestContext requestContext
+    ) {
+        final Cookie tokenCookie = requestContext.getCookies().get("X-Auth-Master-Token");
+        final Cookie masterIdCookie = requestContext.getCookies().get("X-Auth-Master-Id");
+
+        final boolean isParamListNotProvided =  tokenCookie == null || masterIdCookie == null;
+
+        if (isParamListNotProvided) {
+            return false;
+        } else {
+            final String token = tokenCookie.getValue();
+            final String masterId = masterIdCookie.getValue();
+            return stashTokenStore.isValid(token, masterId);
         }
     }
 }
