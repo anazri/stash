@@ -30,8 +30,11 @@ import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.skife.jdbi.v2.DBI;
+
+import javax.ws.rs.ext.MessageBodyWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -107,7 +110,6 @@ public class StashApplication extends Application<StashConfiguration> {
         // Run Migrations
         runDatabaseMigrations(environment, dataSourceFactory);
 
-        // Module registrations
         environment.jersey().register(AppAuthenticationRequiredFilter.class);
         environment.jersey().register(UserAuthenticationRequiredFilter.class);
         environment.jersey().register(MasterAuthenticationRequiredFilter.class);

@@ -92,7 +92,7 @@ public class FileResource {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("/{fileName}")
     public Response getFile(
         @NotNull @PathParam("fileName") String fileName,
@@ -112,7 +112,7 @@ public class FileResource {
 
             final java.io.File targetFile = new java.io.File(file.getFilePath() + file.getFileName());
             final String mimeType = URLConnection.guessContentTypeFromName(targetFile.getName());
-            final String contentDisposition = String.format("attachment; filename=%s", targetFile.getName());
+            final String contentDisposition = String.format("inline; filename=%s", targetFile.getName());
 
             return Response.ok(targetFile, mimeType)
                 .header("Content-Disposition", contentDisposition)

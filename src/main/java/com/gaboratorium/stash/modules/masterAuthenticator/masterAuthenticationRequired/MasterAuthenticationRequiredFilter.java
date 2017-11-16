@@ -34,6 +34,7 @@ public class MasterAuthenticationRequiredFilter implements ContainerRequestFilte
             final Response response = Response.seeOther(uri).build();
             requestContext.abortWith(response);
         } else  {
+
             final String token = tokenCookie.getValue();
             final String masterId = masterIdCookie.getValue();
             if (!stashTokenStore.isValid(token, masterId)) {
@@ -42,8 +43,5 @@ public class MasterAuthenticationRequiredFilter implements ContainerRequestFilte
                 requestContext.abortWith(response);
             }
         }
-
-        System.out.println("Good to go bro!");
-
     }
 }

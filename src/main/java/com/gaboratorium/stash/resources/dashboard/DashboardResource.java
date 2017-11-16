@@ -16,11 +16,13 @@ import com.gaboratorium.stash.resources.users.dao.User;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
 import io.dropwizard.views.View;
 import lombok.RequiredArgsConstructor;
+
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Cookie;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
@@ -298,12 +300,16 @@ public class DashboardResource {
     @MasterAuthenticationRequired
     @Path("/dashboard/logout")
     public Response logout(
-
+        @NotNull @CookieParam("X-Auth-Master-Token") Cookie masterTokenCookie,
+        @NotNull @CookieParam("X-Auth-Master-Id") Cookie masterId
     ) {
+        final NewCookie deletedMasterTokenCookie = new NewCookie(masterTokenCookie, null, 0, false);
+        final NewCookie deletedMasterIdCookie = new NewCookie(masterId, null, 0, false);
         final URI uri = URI.create("/dashboard/login");
+
         return Response.seeOther(uri)
-            .header("Set-Cookie", "X-Auth-Master-Token=deleted;Domain=.example.com;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
-            .header("Set-Cookie", "X-Auth-Master-Id=deleted;Domain=.example.com;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
+            .cookie(deletedMasterTokenCookie)
+            .cookie(deletedMasterIdCookie)
             .build();
     }
 }
