@@ -34,8 +34,8 @@
                         <tr class="even">
                             <td><a href="#download-file">Download file</a></td>
                             <td>GET</td>
-                            <td><code>/files/{fileName}?ownerId={ownerId}</code></td>
-                            <td>Yes</td>
+                            <td><code>/files/{fileName}?appId={appId}&ownerId={ownerId}</code></td>
+                            <td>No</td>
                             <td>No</td>
                         </tr>
                         <tr class="odd">
@@ -77,8 +77,7 @@
                     </table>
                     <h3 id="download-file">Download file</h3>
                     <ul>
-                        <li>Call: GET <code>/files/{fileName}?ownerId={ownerId}</code></li>
-                        <li>App Authentication required</li>
+                        <li>Call: GET <code>/files/{fileName}?appId={appId}&ownerId={ownerId}</code></li>
                         <li>Authenticated User ID and owner ID have to match if owner ID is provided</li>
                     </ul>
                     <h3 id="delete-file">Delete file</h3>

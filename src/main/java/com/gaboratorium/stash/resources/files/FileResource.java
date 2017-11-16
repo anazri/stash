@@ -92,12 +92,11 @@ public class FileResource {
     }
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("/{fileName}")
     public Response getFile(
         @NotNull @PathParam("fileName") String fileName,
+        @NotNull@QueryParam("appId") String appId,
         @QueryParam("ownerId") String ownerId,
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) String appId,
         @HeaderParam(UserAuthenticationHeaders.USER_ID) String userId,
         @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) String userToken
     ) {

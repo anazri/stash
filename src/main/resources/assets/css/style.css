@@ -334,7 +334,7 @@ section {
 }
 
 .c-files__file:hover {
-    border-color: #007bff;
+    border-color: gray;
 }
 
 .c-files__file-logo {
@@ -343,6 +343,10 @@ section {
 	height: 120px;
 	display: flex;
 	font-size: 3rem;
+}
+
+.a--no-hover:hover {
+    text-decoration: none;
 }
 
 .c-files__file-logo-icon {

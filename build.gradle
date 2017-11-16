@@ -33,6 +33,7 @@ dependencies {
     // Jersey Media Json Jackson
 //    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '2.26'
 
+
     // Lombok
     compileOnly  'org.projectlombok:lombok:1.16.18'
 
