@@ -158,9 +158,11 @@ public class DashboardResource {
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
+        final String appToken = stashTokenStore.create(app.getAppId(), StashTokenStore.getHalfAnHourFromNow());
         final AppViewModel model = new AppViewModel(
             app,
-            master
+            master,
+            appToken
         );
         return new AppView(model);
     }

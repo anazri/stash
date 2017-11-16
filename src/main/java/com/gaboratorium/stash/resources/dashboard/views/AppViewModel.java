@@ -12,4 +12,6 @@ public class AppViewModel {
     private final App app;
     @Getter
     private final Master master;
+    @Getter
+    private final String appToken;
 }

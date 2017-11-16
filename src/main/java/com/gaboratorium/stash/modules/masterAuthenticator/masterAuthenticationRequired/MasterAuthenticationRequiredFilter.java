@@ -30,18 +30,20 @@ public class MasterAuthenticationRequiredFilter implements ContainerRequestFilte
         final boolean isParamListNotProvided =  tokenCookie == null || masterIdCookie == null;
 
         if (isParamListNotProvided) {
-            final URI uri = URI.create("dashboard/login");
-            final Response response = Response.seeOther(uri).build();
-            requestContext.abortWith(response);
+            rejectRequest(requestContext);
         } else  {
 
             final String token = tokenCookie.getValue();
             final String masterId = masterIdCookie.getValue();
             if (!stashTokenStore.isValid(token, masterId)) {
-                final URI uri = URI.create("dashboard/login");
-                final Response response = Response.seeOther(uri).build();
-                requestContext.abortWith(response);
+                rejectRequest(requestContext);
             }
         }
+    }
+
+    private void rejectRequest(ContainerRequestContext requestContext) {
+        final URI uri = URI.create("dashboard/login");
+        final Response response = Response.seeOther(uri).build();
+        requestContext.abortWith(response);
     }
 }
