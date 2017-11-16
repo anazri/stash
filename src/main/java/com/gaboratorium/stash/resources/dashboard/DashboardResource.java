@@ -12,6 +12,7 @@ import com.gaboratorium.stash.resources.documents.dao.Document;
 import com.gaboratorium.stash.resources.documents.dao.DocumentDao;
 import com.gaboratorium.stash.resources.files.dao.File;
 import com.gaboratorium.stash.resources.files.dao.FileDao;
+import com.gaboratorium.stash.resources.requestLogs.dao.RequestLogDao;
 import com.gaboratorium.stash.resources.users.dao.User;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
 import io.dropwizard.views.View;
@@ -37,6 +38,7 @@ public class DashboardResource {
     final private MasterDao masterDao;
     final private DocumentDao documentDao;
     final private FileDao fileDao;
+    final private RequestLogDao requestLogDao;
 
     private final StashTokenStore stashTokenStore;
 
@@ -169,12 +171,19 @@ public class DashboardResource {
     public UsersView getUsersView(
         @CookieParam("X-Auth-Master-Id") String masterId
     ) throws JsonProcessingException {
+
+        final String requestLogId = UUID.randomUUID().toString();
+        requestLogDao.insert(
+            requestLogId,
+            "get",
+            "dashboard/users",
+            true
+        );
+
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
         final List<User> users = userDao.findByAppId(app.getAppId());
         final Integer numberOfUsers = users.size();
-
-        // final String users = Jackson.newObjectMapper().writeValueAsString(userList);
 
         final UsersViewModel model = new UsersViewModel(
             app,

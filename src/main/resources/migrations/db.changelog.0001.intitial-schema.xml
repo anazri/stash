@@ -139,5 +139,24 @@
             </column>
         </createTable>
 
+        <!-- Logs -->
+        <createTable tableName="request_logs">
+            <column name="id" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="request_type" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="request_url" type="varchar(256)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="is_successful" type="boolean">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="created_at" type="datetime" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
     </changeSet>
 </databaseChangeLog>

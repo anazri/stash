@@ -15,6 +15,7 @@ import com.gaboratorium.stash.resources.documents.DocumentResource;
 import com.gaboratorium.stash.resources.documents.dao.DocumentDao;
 import com.gaboratorium.stash.resources.files.FileResource;
 import com.gaboratorium.stash.resources.files.dao.FileDao;
+import com.gaboratorium.stash.resources.requestLogs.dao.RequestLogDao;
 import com.gaboratorium.stash.resources.users.UserResource;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
 import io.dropwizard.Application;
@@ -30,11 +31,8 @@ import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.skife.jdbi.v2.DBI;
-
-import javax.ws.rs.ext.MessageBodyWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -46,6 +44,9 @@ public class StashApplication extends Application<StashConfiguration> {
 
     public static void main(String[] args) throws Exception {
         new StashApplication().run(args);
+
+        System.out.println();
+        System.out.println("Stash Backend is up and running. Visit http://localhost:8080 to open the Stash Dashboard.");
     }
 
     @Override
@@ -71,6 +72,7 @@ public class StashApplication extends Application<StashConfiguration> {
         final UserDao userDao = dbi.onDemand(UserDao.class);
         final DocumentDao documentDao = dbi.onDemand(DocumentDao.class);
         final FileDao fileDao = dbi.onDemand(FileDao.class);
+        final RequestLogDao requestLogDao = dbi.onDemand(RequestLogDao.class);
 
         // Resource
         final AppResource appResource = new AppResource(
@@ -104,6 +106,7 @@ public class StashApplication extends Application<StashConfiguration> {
             masterDao,
             documentDao,
             fileDao,
+            requestLogDao,
             stashTokenStore
         );
 
@@ -119,6 +122,8 @@ public class StashApplication extends Application<StashConfiguration> {
         environment.jersey().register(documentResource);
         environment.jersey().register(fileResource);
         environment.jersey().register(dashboardResource);
+
+
     }
 
     private void runDatabaseMigrations(Environment environment, DataSourceFactory database) throws LiquibaseException, SQLException {
