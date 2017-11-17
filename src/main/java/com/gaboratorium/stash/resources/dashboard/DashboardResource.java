@@ -2,6 +2,7 @@ package com.gaboratorium.stash.resources.dashboard;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequired;
+import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.App;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
@@ -16,7 +17,9 @@ import com.gaboratorium.stash.resources.requestLogs.dao.RequestLogDao;
 import com.gaboratorium.stash.resources.users.dao.User;
 import com.gaboratorium.stash.resources.users.dao.UserDao;
 import io.dropwizard.views.View;
+import liquibase.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -68,9 +71,9 @@ public class DashboardResource {
     @POST
     @Path("dashboard/login")
     public Response getLoginView(
-        @NotNull @FormParam("appId") String appId,
-        @NotNull @FormParam("masterEmail") String masterEmail,
-        @NotNull @FormParam("masterPassword") String masterPassword
+        @NotNull @FormParam("appId") final String appId,
+        @NotNull @FormParam("masterEmail") final String masterEmail,
+        @NotNull @FormParam("masterPassword") final String masterPassword
     ) {
         final Master master = masterDao.findByCredentials(
             masterEmail,
@@ -110,12 +113,12 @@ public class DashboardResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/dashboard/register")
     public View registerApp(
-        @NotNull @FormParam("appId") String appId,
-        @NotNull @FormParam("appSecret") String appSecret,
-        @NotNull @FormParam("appName") String appName,
-        @NotNull @FormParam("appDescription") String appDescription,
-        @NotNull @FormParam("masterEmail") String masterEmail,
-        @NotNull @FormParam("masterPasswordHash") String masterPasswordHash
+        @NotNull @FormParam("appId") final String appId,
+        @NotNull @FormParam("appSecret") final String appSecret,
+        @NotNull @FormParam("appName") final String appName,
+        @NotNull @FormParam("appDescription") final String appDescription,
+        @NotNull @FormParam("masterEmail") final String masterEmail,
+        @NotNull @FormParam("masterPasswordHash") final String masterPasswordHash
     ) {
         final boolean isRequestValid =
             !appId.isEmpty() &&
@@ -148,179 +151,224 @@ public class DashboardResource {
         return new LoginView("Your app has been succesfully registered.");
     }
 
-    // Master authentication required
+    // Dashboard (logged in)
 
     @GET
     @MasterAuthenticationRequired
     @Path("dashboard/app")
-    public AppView getAppView(
-        @CookieParam("X-Auth-Master-Id") String masterId
+    public Response getAppView(
+        @CookieParam("X-Auth-Master-Id") final String masterId
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
         final String appToken = stashTokenStore.create(app.getAppId(), StashTokenStore.getHalfAnHourFromNow());
+        final String fkey = UUID.randomUUID().toString();
         final AppViewModel model = new AppViewModel(
             app,
             master,
-            appToken
+            appToken,
+            fkey
         );
-        return new AppView(model);
+
+        final View view = new AppView(model);
+        return getDashboardViewResponse(view, fkey);
     }
 
     @GET
     @MasterAuthenticationRequired
     @Path("dashboard/users")
-    public UsersView getUsersView(
-        @CookieParam("X-Auth-Master-Id") String masterId
+    public Response getUsersView(
+        @CookieParam("X-Auth-Master-Id") final String masterId
     ) throws JsonProcessingException {
-
-        final String requestLogId = UUID.randomUUID().toString();
-        requestLogDao.insert(
-            requestLogId,
-            "get",
-            "dashboard/users",
-            true
-        );
 
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
         final List<User> users = userDao.findByAppId(app.getAppId());
         final Integer numberOfUsers = users.size();
+        final String fkey = UUID.randomUUID().toString();
 
         final UsersViewModel model = new UsersViewModel(
             app,
             users,
-            numberOfUsers
+            numberOfUsers,
+            fkey
         );
 
-        return new UsersView(model);
+        final View view = new UsersView(model);
+        return getDashboardViewResponse(view, fkey);
     }
 
     @GET
     @MasterAuthenticationRequired
     @Path("dashboard/documents")
-    public DocumentsView getDocumentsView (
-        @CookieParam("X-Auth-Master-Id") String masterId
+    public Response getDocumentsView (
+        @CookieParam("X-Auth-Master-Id") final String masterId
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
         final List<Document> documents = documentDao.findByAppId(app.getAppId());
         final Integer numberOfDocuments = documents.size();
+        final String fkey = UUID.randomUUID().toString();
 
         final DocumentsViewModel model = new DocumentsViewModel(
             app,
             documents,
-            numberOfDocuments
+            numberOfDocuments,
+            fkey
         );
 
-        return new DocumentsView(model);
+        final View view = new DocumentsView(model);
+        return getDashboardViewResponse(view, fkey);
     }
 
     @GET
     @MasterAuthenticationRequired
     @Path("dashboard/files")
-    public FilesView getFilesView (
-        @CookieParam("X-Auth-Master-Id") String masterId
+    public Response getFilesView (
+        @CookieParam("X-Auth-Master-Id") final String masterId
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
         final List<File> files = fileDao.findByAppId(app.getAppId());
         final Integer numberOfFiles = files.size();
+        final String fkey = UUID.randomUUID().toString();
 
         final FilesViewModel model = new FilesViewModel(
             app,
             files,
-            numberOfFiles
+            numberOfFiles,
+            fkey
         );
 
 
-        return new FilesView(model);
+        final View view = new FilesView(model);
+
+        return getDashboardViewResponse(view, fkey);
     }
 
     @GET
     @MasterAuthenticationRequired
     @Path("/dashboard/docs/getting_started")
-    public GettingStartedView getGettingStartedView(
-        @CookieParam("X-Auth-Master-Id") String masterId
+    public Response getGettingStartedView(
+        @CookieParam("X-Auth-Master-Id") final String masterId
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
+        final String fkey = UUID.randomUUID().toString();
+
         final GettingStartedViewModel model = new GettingStartedViewModel(
-            app
+            app,
+            fkey
         );
-        return new GettingStartedView(model);
+
+        final View view = new GettingStartedView(model);
+
+        return getDashboardViewResponse(view, fkey);
     }
 
     @GET
     @MasterAuthenticationRequired
     @Path("/dashboard/docs/app_service")
-    public AppServiceDocsView getAppSettingsDocsView(
-        @CookieParam("X-Auth-Master-Id") String masterId
+    public Response getAppSettingsDocsView(
+        @CookieParam("X-Auth-Master-Id") final String masterId
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
+        final String fkey = UUID.randomUUID().toString();
         final AppSettingsDocsViewModel model = new AppSettingsDocsViewModel(
-            app
+            app,
+            fkey
         );
-        return new AppServiceDocsView(model);
+        final View view = new AppServiceDocsView(model);
+        return getDashboardViewResponse(view, fkey);
     }
 
     @GET
     @MasterAuthenticationRequired
     @Path("/dashboard/docs/user_service")
-    public UserServiceDocsView getUserServiceDocsView(
-        @CookieParam("X-Auth-Master-Id") String masterId
+    public Response getUserServiceDocsView(
+        @CookieParam("X-Auth-Master-Id") final String masterId
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
+        final String fkey = UUID.randomUUID().toString();
         final UserServiceDocsViewModel model = new UserServiceDocsViewModel(
-            app
+            app,
+            fkey
         );
-        return new UserServiceDocsView(model);
+        final View view = new UserServiceDocsView(model);
+        return getDashboardViewResponse(view, fkey);
     }
 
     @GET
     @MasterAuthenticationRequired
     @Path("/dashboard/docs/document_service")
-    public DocumentServiceDocsView getDocumentServiceDocsView(
-        @CookieParam("X-Auth-Master-Id") String masterId
+    public Response getDocumentServiceDocsView(
+        @CookieParam("X-Auth-Master-Id") final String masterId
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
+        final String fkey = UUID.randomUUID().toString();
         final DocumentServiceDocsViewModel model = new DocumentServiceDocsViewModel(
-            app
+            app,
+            fkey
         );
-        return new DocumentServiceDocsView(model);
+
+        final View view = new DocumentServiceDocsView(model);
+        return getDashboardViewResponse(view, fkey);
     }
 
     @GET
     @MasterAuthenticationRequired
     @Path("/dashboard/docs/file_service")
-    public FileServiceDocsView getFileServiceDocsView(
-        @CookieParam("X-Auth-Master-Id") String masterId
+    public Response getFileServiceDocsView(
+        @CookieParam("X-Auth-Master-Id") final String masterId
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
+        final String fkey = UUID.randomUUID().toString();
         final FileServiceDocsViewModel model = new FileServiceDocsViewModel(
-            app
+            app,
+            fkey
         );
-        return new FileServiceDocsView(model);
+
+        final View view = new FileServiceDocsView(model);
+        return getDashboardViewResponse(view, fkey);
     }
 
-    @GET
+    @POST
     @MasterAuthenticationRequired
     @Path("/dashboard/logout")
     public Response logout(
-        @NotNull @CookieParam("X-Auth-Master-Token") Cookie masterTokenCookie,
-        @NotNull @CookieParam("X-Auth-Master-Id") Cookie masterId
+        @NotNull @CookieParam("X-Auth-Master-Token") final Cookie masterTokenCookie,
+        @NotNull @CookieParam("X-Auth-Master-Id") final Cookie masterId,
+        @NotNull @CookieParam("fkey") final Cookie fkeyCookie,
+        @NotEmpty @FormParam("fkey") final String fkeyFromForm
     ) {
+
+        final boolean isRequestComesFromDashboard = fkeyCookie.getValue().equals(fkeyFromForm);
+        if (!isRequestComesFromDashboard) {
+            return StashResponse.forbidden();
+        }
+
         final NewCookie deletedMasterTokenCookie = new NewCookie(masterTokenCookie, null, 0, false);
         final NewCookie deletedMasterIdCookie = new NewCookie(masterId, null, 0, false);
+        final NewCookie deleteFkeyCookie = new NewCookie(fkeyCookie, null, 0, false);
         final URI uri = URI.create("/dashboard/login");
 
         return Response.seeOther(uri)
             .cookie(deletedMasterTokenCookie)
             .cookie(deletedMasterIdCookie)
+            .cookie(deleteFkeyCookie)
+            .build();
+    }
+
+    private Response getDashboardViewResponse(final View view, final String fkey) {
+        final NewCookie fkeyCookie = new NewCookie("fkey", fkey);
+        return Response.status(Response.Status.OK)
+            .type(MediaType.TEXT_HTML)
+            .entity(view)
+            .cookie(fkeyCookie)
             .build();
     }
 }

@@ -70,6 +70,20 @@ section {
 	color: #bdbdbd;
 }
 
+.c-sidebar__menu-link--button {
+    width: 100%;
+    color: #bdbdbd;
+    background-color: #262626;
+    border: none;
+    padding: .5rem 1rem;
+    text-align: left;
+}
+
+.c-sidebar__menu-link--button:hover {
+    cursor: pointer;
+    background-color: #424242;
+}
+
 .c-sidebar__menu-link:hover {
 	color: #bdbdbd;
 }

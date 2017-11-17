@@ -1,6 +1,7 @@
 package com.gaboratorium.stash.resources.dashboard.views;
 
 import com.gaboratorium.stash.resources.apps.dao.App;
+import com.gaboratorium.stash.resources.dashboard.DashboardViewModel;
 import com.gaboratorium.stash.resources.documents.dao.Document;
 import lombok.Data;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Data
-public class DocumentsViewModel {
+public class DocumentsViewModel implements DashboardViewModel {
 
     @Getter
     private final App app;
@@ -18,4 +19,7 @@ public class DocumentsViewModel {
 
     @Getter
     private final Integer numberOfDocuments;
+
+    @Getter
+    private final String fkey;
 }
