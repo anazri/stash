@@ -354,6 +354,7 @@ public class DashboardResource {
         final NewCookie deletedMasterTokenCookie = new NewCookie(masterTokenCookie, null, 0, false);
         final NewCookie deletedMasterIdCookie = new NewCookie(masterId, null, 0, false);
         final NewCookie deleteFkeyCookie = new NewCookie(fkeyCookie, null, 0, false);
+
         final URI uri = URI.create("/dashboard/login");
 
         return Response.seeOther(uri)
@@ -364,7 +365,7 @@ public class DashboardResource {
     }
 
     private Response getDashboardViewResponse(final View view, final String fkey) {
-        final NewCookie fkeyCookie = new NewCookie("fkey", fkey);
+        final NewCookie fkeyCookie = new NewCookie("fkey", fkey, "/dashboard", "localhost", null, 60*60*24*365, false);
         return Response.status(Response.Status.OK)
             .type(MediaType.TEXT_HTML)
             .entity(view)
