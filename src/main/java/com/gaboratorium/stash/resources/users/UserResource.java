@@ -68,7 +68,7 @@ public class UserResource {
             body.userBirthday
         );
 
-        return StashResponse.ok(user);
+        return StashResponse.created(user);
     }
 
     @GET
@@ -148,7 +148,7 @@ public class UserResource {
         }
 
         userDao.delete(user.getUserId(), user.getAppId());
-        return StashResponse.ok();
+        return StashResponse.noContent();
     }
 
     @POST

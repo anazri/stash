@@ -80,7 +80,7 @@ public class DocumentResource {
             body.documentOwnerId
         );
 
-        return StashResponse.ok(document);
+        return StashResponse.created(document);
     }
 
     @GET
@@ -121,9 +121,6 @@ public class DocumentResource {
             StashResponse.ok(documents);
     }
 
-    // TODO: this replaces the object. Probably a mapping should be made, where new properties are added
-    // and existing properties are updated
-
     @PUT
     @AppAuthenticationRequired
     @UserAuthenticationRequired
@@ -151,7 +148,6 @@ public class DocumentResource {
         return StashResponse.ok(updatedDocument);
     }
 
-    // TODO: add AND app_id = :appId to all Daos
 
     @DELETE
     @Path("/{id}")
@@ -175,6 +171,6 @@ public class DocumentResource {
             appId
         );
 
-        return StashResponse.ok();
+        return StashResponse.noContent();
     }
 }

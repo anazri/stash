@@ -8,7 +8,6 @@ import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.App;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
-import com.gaboratorium.stash.resources.apps.dao.Master;
 import com.gaboratorium.stash.resources.apps.dao.MasterDao;
 import com.gaboratorium.stash.resources.apps.requests.AuthenticateAppRequestBody;
 import com.gaboratorium.stash.resources.apps.requests.CreateAppRequestBody;
@@ -44,24 +43,24 @@ public class AppResource {
         if (!isAppIdFree) {
             return StashResponse.forbidden("App ID is taken, please choose another one.");
         } else {
-           final String appName = body.appName != null ? body.appName : body.appId;
-           final App app = appDao.insert(
+            final String appName = body.appName != null ? body.appName : body.appId;
+            final App app = appDao.insert(
                 body.appId,
                 appName,
                 body.appDescription,
                 body.appSecret
             );
 
-           final String masterId = UUID.randomUUID().toString();
+            final String masterId = UUID.randomUUID().toString();
 
-            final Master master = masterDao.insert(
-               masterId,
-               body.appId,
-               body.masterEmail,
-               body.masterPasswordHash
-           );
+            masterDao.insert(
+                masterId,
+                body.appId,
+                body.masterEmail,
+                body.masterPasswordHash
+            );
 
-            return StashResponse.ok(app);
+            return StashResponse.created(app);
         }
     }
 
@@ -76,14 +75,19 @@ public class AppResource {
     }
 
     @DELETE
+    @Path("/{appId}")
     @AppAuthenticationRequired
     public Response deleteApp(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @NotNull @PathParam("appId") final String queryAppId
     ) throws Exception {
 
-        // TODO: return if query state
-        appDao.delete(appId);
-        return StashResponse.ok();
+        if (!appId.equals(queryAppId)) {
+            return StashResponse.forbidden();
+        } else {
+            appDao.delete(appId);
+            return StashResponse.noContent();
+        }
     }
 
     @POST

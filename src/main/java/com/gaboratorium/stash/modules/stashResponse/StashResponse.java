@@ -23,6 +23,12 @@ public class StashResponse {
     public static Response ok(String message) { return build(HttpStatus.OK_200, message); }
     public static Response ok(Object responseObject) { return build(HttpStatus.OK_200, responseObject); }
 
+    // Created
+    public static Response created(Object responseObject) { return build(HttpStatus.CREATED_201, responseObject); }
+
+    // No content
+    public static Response noContent() { return build(HttpStatus.NO_CONTENT_204); }
+
     // Bad request
     public static Response badRequest() { return build(HttpStatus.BAD_REQUEST_400, "Bad Request"); }
     public static Response badRequest(String message) { return build(HttpStatus.BAD_REQUEST_400, message); }

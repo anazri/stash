@@ -84,7 +84,7 @@ public class FileResource {
                 isFilePublic
             );
 
-            return StashResponse.ok(file);
+            return StashResponse.created(file);
         } catch (IOException error) {
             return StashResponse.error(error.getMessage());
         }
@@ -145,7 +145,7 @@ public class FileResource {
             final java.nio.file.Path path = Paths.get(file.getFilePath() + file.getFileName());
             Files.delete(path);
             fileDao.delete(file.getFileId(), appId);
-            return StashResponse.ok();
+            return StashResponse.noContent();
 
         } catch (IOException e) {
             return StashResponse.error(e.getMessage());
