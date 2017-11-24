@@ -19,8 +19,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
+import java.util.Optional;
 
-@Path("/users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @RequiredArgsConstructor
@@ -36,10 +36,17 @@ public class UserResource {
 
     @POST
     @AppAuthenticationRequired
+    @Path("apps/{appId}/users")
     public Response registerUser(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @NotNull @Valid final RegisterUserRequestBody body
+        @NotNull @Valid final RegisterUserRequestBody body,
+        @NotNull @PathParam("appId") final String appId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader
     ) {
+
+        if (isAppIdHeaderWronglyPresent(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        }
+
 
         final boolean isUserIdFree = userDao.findById(body.userId, appId) == null;
         final boolean isUserEmailFree = userDao.findByUserEmail(body.userEmail, appId) == null;
@@ -72,12 +79,18 @@ public class UserResource {
     }
 
     @GET
-    @Path("/{user_id}")
+    @Path("apps/{appId}/users/{user_id}")
     @AppAuthenticationRequired
     public Response getUser(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @NotNull @PathParam("user_id") final String userId
+        @NotNull @PathParam("appId") final String appId,
+        @NotNull @PathParam("user_id") final String userId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader
     ) {
+
+        if (isAppIdHeaderWronglyPresent(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        }
+
         final User user = userDao.findById(userId, appId);
         final boolean isUserFound = user != null;
 
@@ -87,15 +100,21 @@ public class UserResource {
     }
 
     @PUT
-    @Path("/{user_id}")
+    @Path("apps/{appId}/users/{user_id}")
     @AppAuthenticationRequired
     @UserAuthenticationRequired
     public Response updateUser(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
+        @NotNull @PathParam("appId") final String appId,
         @NotNull @HeaderParam(UserAuthenticationHeaders.USER_ID) final String requesterUserId,
         @NotNull @PathParam("user_id") final String targetUserId,
-        @NotNull @Valid final UpdateUserRequestBody body
+        @NotNull @Valid final UpdateUserRequestBody body,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader
     ) {
+
+        if (isAppIdHeaderWronglyPresent(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        }
+
         // In current implementation users can only update their own profiles
         final boolean isRequesterAlsoTheOwner = requesterUserId.equals(targetUserId);
         if (!isRequesterAlsoTheOwner) {
@@ -133,13 +152,19 @@ public class UserResource {
     }
 
     @DELETE
-    @Path("/{user_id}")
+    @Path("apps/{appId}/users/{userId}")
     @AppAuthenticationRequired
     @UserAuthenticationRequired
     public Response deleteUser(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @PathParam("user_id") final String userId
+        @NotNull @PathParam("appId") final String appId,
+        @NotNull @PathParam("userId") final String userId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader
     ) {
+
+        if (isAppIdHeaderWronglyPresent(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        }
+
         final User user = userDao.findById(userId, appId);
         final boolean isUserNotFound = user == null;
 
@@ -152,12 +177,18 @@ public class UserResource {
     }
 
     @POST
-    @Path("/authenticate")
+    @Path("apps/{appId}/users/authenticate")
     @AppAuthenticationRequired
     public Response authenticateUser(
-        @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @Valid @NotNull final AuthenticateUserRequestBody body
+        @NotNull @PathParam("appId") final String appId,
+        @NotNull @Valid final AuthenticateUserRequestBody body,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader
     ) {
+
+        if (isAppIdHeaderWronglyPresent(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        }
+
         final User user = userDao.findByUserCredentials(body.getUserId(), body.getUserPasswordHash(), appId);
         final boolean isUserNotFound = user == null;
 
@@ -165,7 +196,7 @@ public class UserResource {
             return StashResponse.forbidden("User does not exist or wrong credentials");
         }
 
-        final String token = stashTokenStore.create(body.userId, StashTokenStore.getHalfAnHourFromNow());
+        final String token = stashTokenStore.create(body.userId, stashTokenStore.getUserAuthTokenExpiryTime());
         return StashResponse.ok(token);
     }
 
@@ -245,5 +276,8 @@ public class UserResource {
         );
     }
 
-
+    private boolean isAppIdHeaderWronglyPresent(final Optional<String> appIdHeader, final String appIdPathParam) {
+        final boolean isHeaderAndPathParamTheSame =  appIdHeader.map(appIdPathParam::equals).orElse(true);
+        return !isHeaderAndPathParamTheSame;
+    }
 }

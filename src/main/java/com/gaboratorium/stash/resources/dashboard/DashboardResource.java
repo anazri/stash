@@ -91,7 +91,7 @@ public class DashboardResource {
         } else {
             final URI uri = URI.create("/dashboard/docs/getting_started");
 
-            final String masterToken = stashTokenStore.create(master.getMasterId(), StashTokenStore.getHalfAnHourFromNow());
+            final String masterToken = stashTokenStore.create(master.getMasterId(), stashTokenStore.getMasterAuthTokenExpiryTime());
 
             return Response
                 .seeOther(uri)
@@ -161,7 +161,7 @@ public class DashboardResource {
     ) {
         final Master master = masterDao.findById(masterId);
         final App app = appDao.findById(master.getAppId());
-        final String appToken = stashTokenStore.create(app.getAppId(), StashTokenStore.getHalfAnHourFromNow());
+        final String appToken = stashTokenStore.create(app.getAppId(), stashTokenStore.getAppAuthTokenExpiryTime());
         final String fkey = UUID.randomUUID().toString();
         final AppViewModel model = new AppViewModel(
             app,

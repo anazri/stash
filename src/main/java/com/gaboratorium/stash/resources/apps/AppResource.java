@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Optional;
 import java.util.UUID;
 
 @Path("/apps")
@@ -65,10 +66,18 @@ public class AppResource {
     }
 
     @GET
+    @Path("/{appId}")
     @AppAuthenticationRequired
     public Response getApp(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId
+        @NotNull @PathParam("appId") final String appId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader
     ) throws JsonProcessingException {
+
+        if (appIdHeader.isPresent()) {
+            if (!appId.equals(appIdHeader.get())) {
+                return StashResponse.forbidden();
+            }
+        }
 
         final App app = appDao.findById(appId);
         return StashResponse.ok(app);
@@ -78,14 +87,14 @@ public class AppResource {
     @Path("/{appId}")
     @AppAuthenticationRequired
     public Response deleteApp(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @NotNull @PathParam("appId") final String queryAppId
+        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appIdHeader,
+        @NotNull @PathParam("appId") final String appId
     ) throws Exception {
 
-        if (!appId.equals(queryAppId)) {
+        if (!appIdHeader.equals(appId)) {
             return StashResponse.forbidden();
         } else {
-            appDao.delete(appId);
+            appDao.delete(appIdHeader);
             return StashResponse.noContent();
         }
     }
@@ -104,7 +113,7 @@ public class AppResource {
             return StashResponse.notFound();
         }
 
-        final String token = stashTokenStore.create(app.getAppId(), StashTokenStore.getHalfAnHourFromNow());
+        final String token = stashTokenStore.create(app.getAppId(), stashTokenStore.getAppAuthTokenExpiryTime());
         final boolean isSecretValid = app.getAppSecret().equals(body.getAppSecret());
 
         return isSecretValid ?

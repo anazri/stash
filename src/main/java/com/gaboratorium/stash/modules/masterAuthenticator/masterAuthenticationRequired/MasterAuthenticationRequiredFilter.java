@@ -1,21 +1,20 @@
 package com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired;
 
-import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
-import liquibase.util.StringUtils;
+import lombok.AllArgsConstructor;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 
 @MasterAuthenticationRequired
+@AllArgsConstructor
 public class MasterAuthenticationRequiredFilter implements ContainerRequestFilter {
 
-    private final StashTokenStore stashTokenStore = new StashTokenStore();
+    private final StashTokenStore stashTokenStore;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {

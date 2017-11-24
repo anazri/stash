@@ -3,32 +3,37 @@ package com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequire
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import liquibase.util.StringUtils;
+import lombok.AllArgsConstructor;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
 
 @AppAuthenticationRequired
+@AllArgsConstructor
 public class AppAuthenticationRequiredFilter implements ContainerRequestFilter {
 
-    private final StashTokenStore stashTokenStore = new StashTokenStore();
+    private final StashTokenStore stashTokenStore;
+    private final boolean isAppAuthenticationRequired;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
 
-        final String token = requestContext.getHeaderString(AppAuthenticationHeaders.APP_TOKEN);
-        final String appId = requestContext.getHeaderString(AppAuthenticationHeaders.APP_ID);
-        final boolean isParamListProvided = StringUtils.isEmpty(token) || StringUtils.isEmpty(appId);
-        final String errorMsg =
-            "App authentication failed because auth token was either not provided, corrupted or expired.";
+        if (isAppAuthenticationRequired) {
+            final String token = requestContext.getHeaderString(AppAuthenticationHeaders.APP_TOKEN);
+            final String appId = requestContext.getHeaderString(AppAuthenticationHeaders.APP_ID);
+            final boolean isParamListProvided = StringUtils.isEmpty(token) || StringUtils.isEmpty(appId);
+            final String errorMsg =
+                "App authentication failed because auth token was either not provided, corrupted or expired.";
 
-        final boolean isMasterAuthenticated = isMasterAuthenticated(requestContext);
+            final boolean isMasterAuthenticated = isMasterAuthenticated(requestContext);
 
-        if (isParamListProvided && !isMasterAuthenticated) {
-            requestContext.abortWith(StashResponse.forbidden(errorMsg));
-        } else if (!stashTokenStore.isValid(token, appId) && !isMasterAuthenticated) {
-            requestContext.abortWith(StashResponse.forbidden(errorMsg));
+            if (isParamListProvided && !isMasterAuthenticated) {
+                requestContext.abortWith(StashResponse.forbidden(errorMsg));
+            } else if (!stashTokenStore.isValid(token, appId) && !isMasterAuthenticated) {
+                requestContext.abortWith(StashResponse.forbidden(errorMsg));
+            }
         }
     }
 

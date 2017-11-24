@@ -6,6 +6,7 @@ import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired
 import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequired;
 import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequiredFilter;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
+import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequired;
 import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequiredFilter;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
@@ -64,9 +65,14 @@ public class StashApplication extends Application<StashConfiguration> {
         final DBI dbi = getDBI(environment, dataSourceFactory);
 
         // Modules
-        final StashTokenStore stashTokenStore = new StashTokenStore();
+        final StashTokenStore stashTokenStore = new StashTokenStore(
+            configuration.getAppsTokenStoreKey(),
+            configuration.getAppAuthTokenExpiryTimeInMinutes(),
+            configuration.getUserAuthTokenExpiryTimeInMinutes(),
+            configuration.getMasterAuthTokenExpiryTimeInMinutes()
+        );
 
-        // Dao
+        // Daos
         final AppDao appDao = dbi.onDemand(AppDao.class);
         final MasterDao masterDao = dbi.onDemand(MasterDao.class);
         final UserDao userDao = dbi.onDemand(UserDao.class);
@@ -74,7 +80,24 @@ public class StashApplication extends Application<StashConfiguration> {
         final FileDao fileDao = dbi.onDemand(FileDao.class);
         final RequestLogDao requestLogDao = dbi.onDemand(RequestLogDao.class);
 
-        // Resource
+        // Filters
+        final AppAuthenticationRequiredFilter appAuthenticationRequiredFilter =
+            new AppAuthenticationRequiredFilter(
+                stashTokenStore,
+                configuration.isAppAuthenticationRequired()
+            );
+
+        final UserAuthenticationRequiredFilter userAuthenticationRequiredFilter =
+            new UserAuthenticationRequiredFilter(
+                stashTokenStore
+            );
+
+        final MasterAuthenticationRequiredFilter masterAuthenticationRequiredFilter =
+            new MasterAuthenticationRequiredFilter(
+                stashTokenStore
+            );
+
+        // Resources
         final AppResource appResource = new AppResource(
             mapper,
             appDao,
@@ -113,17 +136,16 @@ public class StashApplication extends Application<StashConfiguration> {
         // Run Migrations
         runDatabaseMigrations(environment, dataSourceFactory);
 
-        environment.jersey().register(AppAuthenticationRequiredFilter.class);
-        environment.jersey().register(UserAuthenticationRequiredFilter.class);
-        environment.jersey().register(MasterAuthenticationRequiredFilter.class);
+        // Register filters and resources
+        environment.jersey().register(appAuthenticationRequiredFilter);
+        environment.jersey().register(userAuthenticationRequiredFilter);
+        environment.jersey().register(masterAuthenticationRequiredFilter);
         environment.jersey().register(MultiPartFeature.class);
         environment.jersey().register(appResource);
         environment.jersey().register(userResource);
         environment.jersey().register(documentResource);
         environment.jersey().register(fileResource);
         environment.jersey().register(dashboardResource);
-
-
     }
 
     private void runDatabaseMigrations(Environment environment, DataSourceFactory database) throws LiquibaseException, SQLException {

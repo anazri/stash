@@ -3,15 +3,18 @@ package com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequi
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import liquibase.util.StringUtils;
+import lombok.AllArgsConstructor;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Cookie;
 import java.io.IOException;
 
 @UserAuthenticationRequired
+@AllArgsConstructor
 public class UserAuthenticationRequiredFilter implements ContainerRequestFilter {
 
-    private final StashTokenStore stashTokenStore = new StashTokenStore();
+    private final StashTokenStore stashTokenStore;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {

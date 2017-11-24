@@ -8,8 +8,11 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class StashTokenStore {
 
-    // TODO: Should be loaded from configuration file
-    final private String key = "NoOneShouldKnowThisNotEvenSkat";
+    final private String key;
+    final private Integer appAuthTokenExpiryTimeInMinutes;
+    final private Integer userAuthTokenExpiryTimeInMinutes;
+    final private Integer masterAuthTokenExpiryTimeInMinutes;
+
     final private SignatureAlgorithm alg = SignatureAlgorithm.HS256;
     final private String iss = "StashBackendByGaborPinter";
     final private String aud = "StashApp";
@@ -41,17 +44,33 @@ public class StashTokenStore {
         }
     }
 
+    public Date getAppAuthTokenExpiryTime() {
+        return getExpiryDateFromNow(appAuthTokenExpiryTimeInMinutes);
+    }
+
+    public Date getUserAuthTokenExpiryTime() {
+        return getExpiryDateFromNow(userAuthTokenExpiryTimeInMinutes);
+    }
+
+    public Date getMasterAuthTokenExpiryTime() {
+        return getExpiryDateFromNow(masterAuthTokenExpiryTimeInMinutes);
+    }
+
     private Date getNow() {
         return Date.from(
             Instant.now()
         );
     }
 
-    public static Date getHalfAnHourFromNow() {
+    private Date getExpiryDateFromNow(Integer minutes) {
         return Date.from(
             Instant
                 .now()
-                .plusSeconds(1800)
+                .plusSeconds(minutes * 60)
         );
     }
+
+
+
+
 }
