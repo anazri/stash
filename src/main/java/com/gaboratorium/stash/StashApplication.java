@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequiredFilter;
 import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequired;
 import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequiredFilter;
+import com.gaboratorium.stash.modules.requestAuthorizator.RequestGuard;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequired;
 import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequiredFilter;
@@ -72,6 +73,10 @@ public class StashApplication extends Application<StashConfiguration> {
             configuration.getMasterAuthTokenExpiryTimeInMinutes()
         );
 
+        final RequestGuard appRequestGuard = new RequestGuard(
+            configuration.isAppAuthenticationRequired()
+        );
+
         // Daos
         final AppDao appDao = dbi.onDemand(AppDao.class);
         final MasterDao masterDao = dbi.onDemand(MasterDao.class);
@@ -102,7 +107,8 @@ public class StashApplication extends Application<StashConfiguration> {
             mapper,
             appDao,
             masterDao,
-            stashTokenStore
+            stashTokenStore,
+            new RequestGuard(configuration.isAppAuthenticationRequired())
         );
 
         final UserResource userResource = new UserResource(

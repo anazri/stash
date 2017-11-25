@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationHeaders;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequired;
+import com.gaboratorium.stash.modules.requestAuthorizator.RequestGuard;
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.resources.apps.dao.App;
@@ -32,6 +33,7 @@ public class AppResource {
     private final AppDao appDao;
     private final MasterDao masterDao;
     private final StashTokenStore stashTokenStore;
+    private final RequestGuard appRequestGuard;
 
     // Endpoints
 
@@ -73,28 +75,26 @@ public class AppResource {
         @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader
     ) throws JsonProcessingException {
 
-        if (appIdHeader.isPresent()) {
-            if (!appId.equals(appIdHeader.get())) {
-                return StashResponse.forbidden();
-            }
+        if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        } else {
+            final App app = appDao.findById(appId);
+            return StashResponse.ok(app);
         }
-
-        final App app = appDao.findById(appId);
-        return StashResponse.ok(app);
     }
 
     @DELETE
     @Path("/{appId}")
     @AppAuthenticationRequired
     public Response deleteApp(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appIdHeader,
-        @NotNull @PathParam("appId") final String appId
+        @NotNull @PathParam("appId") final String appId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader
     ) throws Exception {
 
-        if (!appIdHeader.equals(appId)) {
+        if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
             return StashResponse.forbidden();
         } else {
-            appDao.delete(appIdHeader);
+            appDao.delete(appId);
             return StashResponse.noContent();
         }
     }

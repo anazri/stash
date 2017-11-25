@@ -80,7 +80,7 @@ public class DocumentResource {
             body.documentOwnerId
         );
 
-        return StashResponse.cr(document);
+        return StashResponse.ok(document);
     }
 
     @GET
