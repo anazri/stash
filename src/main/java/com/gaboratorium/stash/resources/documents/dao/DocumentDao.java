@@ -10,14 +10,14 @@ import java.util.List;
 
 public interface DocumentDao {
 
-    @SqlQuery("select * from documents where id = :documentId and app_id = :appId;")
+    @SqlQuery("select * from stash.documents where id = :documentId and app_id = :appId;")
     @Mapper(DocumentMapper.class)
     Document findById(
         @Bind("documentId") String documentId,
         @Bind("appId") String appId
     );
 
-    @SqlQuery("select * from documents where " +
+    @SqlQuery("select * from stash.documents where " +
         "app_id = :appId and " +
         "document_content ->> :key = :value")
     @Mapper(DocumentMapper.class)
@@ -27,7 +27,7 @@ public interface DocumentDao {
         @Bind("value") String value
     );
 
-    @SqlQuery("select * from documents where " +
+    @SqlQuery("select * from stash.documents where " +
         "app_id = :appId and " +
         "document_content ->> :key = :value and " +
         "document_content ->> :keySecondary = :valueSecondary")
@@ -40,13 +40,13 @@ public interface DocumentDao {
         @Bind("valueSecondary") String valueSecondary
     );
 
-    @SqlQuery("select * from documents where app_id = :appId;")
+    @SqlQuery("select * from stash.documents where app_id = :appId;")
     @Mapper(DocumentMapper.class)
     List<Document> findByAppId(
         @Bind("appId") String appId
     );
 
-    @SqlQuery("insert into documents values (:documentId, :appId, :documentContent, :documentOwnerId) returning *;")
+    @SqlQuery("insert into stash.documents values (:documentId, :appId, :documentContent, :documentOwnerId) returning *;")
     @Mapper(DocumentMapper.class)
     Document insert(
         @Bind("documentId") String documentId,
@@ -55,14 +55,14 @@ public interface DocumentDao {
         @Bind("documentOwnerId") String documentOwnerId
     );
 
-    @SqlQuery("update documents set document_content = :documentContent where id = :documentId returning *")
+    @SqlQuery("update stash.documents set document_content = :documentContent where id = :documentId returning *")
     @Mapper(DocumentMapper.class)
     Document update(
         @Bind("documentId") String documentId,
         @Bind("documentContent") PGobject documentContent
     );
 
-    @SqlUpdate("delete from documents where id = :documentId and app_id = :appId;")
+    @SqlUpdate("delete from stash.documents where id = :documentId and app_id = :appId;")
     void delete(
         @Bind("documentId") String documentId,
         @Bind("appId") String appId

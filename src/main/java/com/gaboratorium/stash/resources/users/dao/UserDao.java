@@ -10,7 +10,7 @@ import java.util.List;
 public interface UserDao {
 
     // Get by ID
-    @SqlQuery("select * from users where id = :userId AND app_id = :appId;")
+    @SqlQuery("select * from stash.users where id = :userId AND app_id = :appId;")
     @Mapper(UserMapper.class)
     User findById(
         @Bind("userId") String userId,
@@ -18,7 +18,7 @@ public interface UserDao {
     );
 
     // Get by e-mail
-    @SqlQuery("select * from users where user_email = :userEmail AND app_id = :appId;")
+    @SqlQuery("select * from stash.users where user_email = :userEmail AND app_id = :appId;")
     @Mapper(UserMapper.class)
     User findByUserEmail(
         @Bind("userEmail") String userEmail,
@@ -26,14 +26,14 @@ public interface UserDao {
     );
 
     // Get by app ID
-    @SqlQuery("select * from users where app_id = :appId;")
+    @SqlQuery("select * from stash.users where app_id = :appId;")
     @Mapper(UserMapper.class)
     List<User> findByAppId(
         @Bind("appId") String appId
     );
 
     // Get by credentials
-    @SqlQuery("select * from users where " +
+    @SqlQuery("select * from stash.users where " +
         "id = :userId AND " +
         "user_password_hash = :userPasswordHash AND " +
         "app_id = :appId;")
@@ -45,7 +45,7 @@ public interface UserDao {
     );
 
     // Insert
-    @SqlQuery("insert into users values (" +
+    @SqlQuery("insert into stash.users values (" +
         ":userId," +
         " :appId," +
         " :userEmail," +
@@ -80,7 +80,7 @@ public interface UserDao {
     );
 
     // Update
-    @SqlQuery("update users set " +
+    @SqlQuery("update stash.users set " +
         "id = :userNewId, " +
         "user_email = :userEmail, " +
         "user_password_hash = :userPasswordHash, " +
@@ -116,7 +116,7 @@ public interface UserDao {
         @Bind("userBirthday") Timestamp userBirthday
     );
 
-    @SqlUpdate("delete from users where id = :userId and app_id = :appId;")
+    @SqlUpdate("delete from stash.users where id = :userId and app_id = :appId;")
     void delete(
         @Bind("userId") String userId,
         @Bind("appId") String appId

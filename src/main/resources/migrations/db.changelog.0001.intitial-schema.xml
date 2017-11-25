@@ -5,9 +5,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
     <changeSet id="1" author="Gábor Pintér">
-
+        <sql>create schema stash</sql>
         <!-- Apps -->
-        <createTable tableName="apps">
+        <createTable tableName="apps" schemaName="stash">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -27,7 +27,7 @@
 
         <!-- Masters -->
 
-        <createTable tableName="masters">
+        <createTable tableName="masters" schemaName="stash">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -47,12 +47,12 @@
 
 
         <!-- Users -->
-        <createTable tableName="users">
+        <createTable tableName="users" schemaName="stash">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="app_id" type="varchar(256)">
-                <constraints primaryKey="true" references="apps(id)" foreignKeyName="app_id" nullable="false"/>
+                <constraints primaryKey="true" references="stash.apps(id)" foreignKeyName="app_id" nullable="false"/>
             </column>
             <column name="user_email" type="varchar(256)">
                 <constraints nullable="false"/>
@@ -96,7 +96,7 @@
         </createTable>
 
         <!-- Documents -->
-        <createTable tableName="documents">
+        <createTable tableName="documents" schemaName="stash">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -115,7 +115,7 @@
         </createTable>
 
         <!-- Files -->
-        <createTable tableName="files">
+        <createTable tableName="files" schemaName="stash">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -140,7 +140,7 @@
         </createTable>
 
         <!-- Logs -->
-        <createTable tableName="request_logs">
+        <createTable tableName="request_logs" schemaName="stash">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>

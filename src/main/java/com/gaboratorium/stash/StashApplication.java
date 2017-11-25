@@ -3,11 +3,9 @@ package com.gaboratorium.stash;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequiredFilter;
-import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequired;
 import com.gaboratorium.stash.modules.masterAuthenticator.masterAuthenticationRequired.MasterAuthenticationRequiredFilter;
 import com.gaboratorium.stash.modules.requestAuthorizator.RequestGuard;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
-import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequired;
 import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationRequiredFilter;
 import com.gaboratorium.stash.resources.apps.dao.AppDao;
 import com.gaboratorium.stash.resources.apps.AppResource;
@@ -35,8 +33,13 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.skife.jdbi.v2.DBI;
+
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StashApplication extends Application<StashConfiguration> {
 
@@ -45,6 +48,7 @@ public class StashApplication extends Application<StashConfiguration> {
         .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
 
     public static void main(String[] args) throws Exception {
+
         new StashApplication().run(args);
 
         System.out.println();
@@ -60,6 +64,9 @@ public class StashApplication extends Application<StashConfiguration> {
 
     @Override
     public void run(StashConfiguration configuration, Environment environment) throws Exception {
+
+
+        createStashDb(configuration);
 
         // Database
         final DataSourceFactory dataSourceFactory = configuration.getDatabase();
@@ -176,6 +183,30 @@ public class StashApplication extends Application<StashConfiguration> {
         );
 
         migrator.update("Custom contexts");
+    }
+
+    private void createStashDb(StashConfiguration configuration) throws SQLException, ClassNotFoundException {
+
+        Class.forName("org.postgresql.Driver");
+        Connection connection = null;
+        connection = DriverManager.getConnection(
+            configuration.getDatabase().getUrl(),
+            configuration.getDatabase().getUser(),
+            configuration.getDatabase().getPassword()
+        );
+
+        ResultSet executeQuery = connection.createStatement().executeQuery("SELECT datname FROM pg_database;");
+
+        List<String> tables = new ArrayList<>();
+
+        while(executeQuery.next()) {
+            tables.add(executeQuery.getString(1));
+        }
+
+        if(!tables.contains("stash")) {
+            connection.createStatement().execute("Create database stash;");
+        }
+        connection.close();
     }
 
     private DBI getDBI (Environment environment, DataSourceFactory database) {
