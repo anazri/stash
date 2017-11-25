@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationHeaders;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequired;
+import com.gaboratorium.stash.modules.requestAuthorizator.RequestGuard;
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationHeaders;
@@ -20,9 +21,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-@Path("/documents")
+@Path("/apps")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @RequiredArgsConstructor
@@ -33,62 +35,66 @@ public class DocumentResource {
     private final ObjectMapper mapper;
     private final DocumentDao documentDao;
     private final StashTokenStore stashTokenStore;
+    private final RequestGuard appRequestGuard;
+    private final RequestGuard userRequestGuard;
 
     // Endpoints
 
     @POST
+    @Path("/{appId}/documents")
     @AppAuthenticationRequired
     public Response createDocument(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
-        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) final String userToken,
-        @NotNull @Valid  CreateDocumentRequestBody body
+        @NotNull @Valid final CreateDocumentRequestBody body,
+        @NotNull @PathParam("appId") final String appId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) final Optional<String> userIdHeader,
+        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) final Optional<String> userTokenHeader
     ) throws SQLException, JsonProcessingException {
 
+        if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        }
+
+        if (userRequestGuard.isAuthenticationRequired() && body.getDocumentOwnerId() != null) {
+
+            if (!(userTokenHeader.isPresent() && userIdHeader.isPresent())) {
+                return StashResponse.forbidden("User authentication token or ID header is not present");
+            } else if (!userRequestGuard.isRequestAuthorized(userIdHeader, body.documentOwnerId.orElse(null))) {
+                return StashResponse.forbidden("Requested user ID and requester user ID don't match.");
+            } else if (!stashTokenStore.isValid(userTokenHeader.get(), userIdHeader.get())) {
+                return StashResponse.forbidden("User authentication token is not valid.");
+            }
+        }
+
         final String documentId = UUID.randomUUID().toString();
-
         final boolean isIdTaken = documentDao.findById(documentId, appId) != null;
-
-        // TODO: Retry
-
         if (isIdTaken) {
             return StashResponse.conflict("Sorry, something went wrong. Please try again.");
         }
 
-        final boolean isDocumentOwnerIdProvided = body.documentOwnerId != null;
-        final boolean isUserCredentialsProvided = userId != null && userToken != null;
-
-        // TODO: Eliminate the Christmas tree
-
-        if (isDocumentOwnerIdProvided) {
-            if (isUserCredentialsProvided) {
-                final boolean isTokenValid = stashTokenStore.isValid(userToken, userId);
-                final boolean isRequesterTheTargetUser = userId.equals(body.documentOwnerId);
-                if (!isTokenValid || !isRequesterTheTargetUser) {
-                    return StashResponse.forbidden("User authentication failed.");
-                }
-            } else {
-                return StashResponse.forbidden("Owner cannot be set without user authentication (user token was not provided).");
-            }
-
+        final String documentOwnerId;
+        if (body.getDocumentOwnerId() == null) {
+            documentOwnerId = null;
+        } else {
+            documentOwnerId = body.getDocumentOwnerId().orElse(null);
         }
 
         final Document document = documentDao.insert(
             documentId,
             appId,
             body.getDocumentContentAsJsonb(),
-            body.documentOwnerId
+            documentOwnerId
         );
 
-        return StashResponse.ok(document);
+        return StashResponse.created(document);
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/apps/{appId}/documents/{documentId}")
     @AppAuthenticationRequired
     public Response getDocumentById(
         @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @NotNull @PathParam("id") String documentId
+        @NotNull @PathParam("documentId") String documentId
     ) {
         final Document document = documentDao.findById(documentId, appId);
         final boolean isDocumentNotFound = document == null;
@@ -99,6 +105,7 @@ public class DocumentResource {
     }
 
     @GET
+    @Path("/apps/{appId}/documents")
     @AppAuthenticationRequired
     public Response queryDocument(
         @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
@@ -127,11 +134,11 @@ public class DocumentResource {
     @PUT
     @AppAuthenticationRequired
     @UserAuthenticationRequired
-    @Path("/{id}")
+    @Path("/apps/{appId}/documents/{documentId}")
     public Response updateDocument(
         @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
         @NotNull @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
-        @NotNull @PathParam("id") String documentId,
+        @NotNull @PathParam("documentId") String documentId,
         @NotNull @Valid UpdateDocumentRequestBody body
     ) throws SQLException, JsonProcessingException {
 
@@ -154,13 +161,13 @@ public class DocumentResource {
     // TODO: add AND app_id = :appId to all Daos
 
     @DELETE
-    @Path("/{id}")
+    @Path("/apps/{appId}/documents/{documentId}")
     @AppAuthenticationRequired
     @UserAuthenticationRequired
     public Response deleteDocument(
         @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
         @NotNull @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
-        @NotNull @PathParam("id") String documentId
+        @NotNull @PathParam("documentId") String documentId
     ) {
         final Document document = documentDao.findById(documentId, appId);
         final boolean isDocumentNotFound = document == null;

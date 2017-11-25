@@ -13,6 +13,7 @@ import org.postgresql.util.PGobject;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Optional;
 
 @JsonDeserialize
 public class CreateDocumentRequestBody {
@@ -23,7 +24,7 @@ public class CreateDocumentRequestBody {
     public JsonNode documentContent;
 
     @JsonProperty @Getter
-    public String documentOwnerId;
+    public Optional<String> documentOwnerId;
 
     public PGobject getDocumentContentAsJsonb() throws SQLException, JsonProcessingException {
         PGobject documentContentAsJsonb = new PGobject();

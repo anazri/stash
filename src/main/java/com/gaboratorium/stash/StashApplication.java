@@ -77,6 +77,10 @@ public class StashApplication extends Application<StashConfiguration> {
             configuration.isAppAuthenticationRequired()
         );
 
+        final RequestGuard userRequestGuard = new RequestGuard(
+            configuration.isUserAuthenticationRequired()
+        );
+
         // Daos
         final AppDao appDao = dbi.onDemand(AppDao.class);
         final MasterDao masterDao = dbi.onDemand(MasterDao.class);
@@ -108,7 +112,7 @@ public class StashApplication extends Application<StashConfiguration> {
             appDao,
             masterDao,
             stashTokenStore,
-            new RequestGuard(configuration.isAppAuthenticationRequired())
+            appRequestGuard
         );
 
         final UserResource userResource = new UserResource(
@@ -120,7 +124,9 @@ public class StashApplication extends Application<StashConfiguration> {
         final DocumentResource documentResource = new DocumentResource(
             mapper,
             documentDao,
-            stashTokenStore
+            stashTokenStore,
+            appRequestGuard,
+            userRequestGuard
         );
 
         final FileResource fileResource = new FileResource(
