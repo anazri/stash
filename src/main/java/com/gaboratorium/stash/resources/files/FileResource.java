@@ -3,6 +3,7 @@ package com.gaboratorium.stash.resources.files;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationHeaders;
 import com.gaboratorium.stash.modules.appAuthenticator.appAuthenticationRequired.AppAuthenticationRequired;
+import com.gaboratorium.stash.modules.requestAuthorizator.RequestGuard;
 import com.gaboratorium.stash.modules.stashResponse.StashResponse;
 import com.gaboratorium.stash.modules.stashTokenStore.StashTokenStore;
 import com.gaboratorium.stash.modules.userAuthenticator.userAuthenticationRequired.UserAuthenticationHeaders;
@@ -22,46 +23,58 @@ import java.io.*;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.UUID;
 
-@Path("/files")
+@Path("/apps")
 @RequiredArgsConstructor
 public class FileResource {
 
     private final ObjectMapper objectMapper;
     private final FileDao fileDao;
     private final StashTokenStore stashTokenStore;
+    private final RequestGuard appRequestGuard;
+    private final RequestGuard userRequestGuard;
 
     // private final String uploadPath = "C:/Users/gaboratorium/Desktop/";
     private final String uploadPath = "";
 
     @POST
+    @Path("/{appId}/files")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @AppAuthenticationRequired
     public Response uploadFile(
         @NotNull @Valid @FormDataParam("file") InputStream inputStream,
         @NotNull @Valid @FormDataParam("file") FormDataBodyPart fileDetails,
-        @NotNull @Valid @HeaderParam(AppAuthenticationHeaders.APP_ID) String appId, // TODO: Snake notation ?
-        @HeaderParam(UserAuthenticationHeaders.USER_ID) String userId,
-        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) String userToken,
+        @NotNull @Valid @PathParam("appId") String appId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) Optional<String> appIdHeader,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) Optional<String> userIdHeader,
+        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) Optional<String> userTokenHeader,
         @Valid @FormDataParam("isPublic") Boolean isPublic,
         @Valid @FormDataParam("ownerId") String ownerId
     )  {
 
+        if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        }
+
         final boolean isOwnerIdProvided = ownerId != null;
         final boolean isFilePublic = isPublic == null || isPublic;
-        final String ownerNameInPath = isOwnerIdProvided ? ownerId  : "common";
-        final String fileUploadPath = uploadPath + ownerNameInPath + "/";
 
-        if (isOwnerIdProvided) {
-            final boolean isOwnerAuthenticated =
-                ownerId.equals(userId) && stashTokenStore.isValid(userToken, userId);
+        if (userRequestGuard.isAuthenticationRequired() && ownerId != null) {
 
-            if (!isOwnerAuthenticated) {
-                return StashResponse.forbidden("Owner authentication failed.");
+            if (!(userTokenHeader.isPresent() && userIdHeader.isPresent())) {
+                return StashResponse.forbidden("User authentication token or ID header is not present");
+            } else if (!userRequestGuard.isRequestAuthorized(userIdHeader, ownerId)) {
+                return StashResponse.forbidden("Requested user ID and requester user ID don't match.");
+            } else if (!stashTokenStore.isValid(userTokenHeader.get(), userIdHeader.get())) {
+                return StashResponse.forbidden("User authentication token is not valid.");
             }
         }
+
+        final String ownerNameInPath = isOwnerIdProvided ? ownerId  : "common";
+        final String fileUploadPath = uploadPath + ownerNameInPath + "/";
 
         final String fileName = fileDetails.getContentDisposition().getFileName();
         final File checkedFile = fileDao.findByNameAndOwner(fileName, appId, ownerId);
@@ -92,21 +105,33 @@ public class FileResource {
     }
 
     @GET
-    @Path("/{fileName}")
+    @Path("/{appId}/files/{fileName}")
+    @AppAuthenticationRequired
     public Response getFile(
+        @NotNull @PathParam("appId") String appId,
         @NotNull @PathParam("fileName") String fileName,
-        @NotNull@QueryParam("appId") String appId,
-        @QueryParam("ownerId") String ownerId,
-        @HeaderParam(UserAuthenticationHeaders.USER_ID) String userId,
-        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) String userToken
+        @QueryParam("ownerId") Optional<String> ownerId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) Optional<String> appIdHeader,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) Optional<String> userIdHeader,
+        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) Optional<String> userTokenHeader
     ) {
 
-        final File file = getFileByNameAndOwnerId(fileName, appId, ownerId);
+        if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        }
+
+        final File file = getFileByNameAndOwnerId(fileName, appId, ownerId.orElse(null));
+
         if (file == null) {
             return Response.status(404).entity("File not found.").build();
         }
 
-        final boolean isFileAccessible =  file.isPublic() || isOwnerAuthenticated(file, userId, userToken);
+        final boolean isFileAccessible =  file.isPublic() || isOwnerAuthenticated(
+            file,
+            userIdHeader,
+            userTokenHeader
+        );
+
         if (isFileAccessible) {
 
             final java.io.File targetFile = new java.io.File(file.getFilePath() + file.getFileName());
@@ -124,22 +149,36 @@ public class FileResource {
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{fileName}")
+    @Path("/{appId}/files/{fileName}")
     @AppAuthenticationRequired
     @UserAuthenticationRequired
     public Response deleteFile(
+        @NotNull @PathParam("appId") String appId,
         @NotNull @PathParam("fileName") String fileName,
-        @NotNull @QueryParam("ownerId") String ownerId,
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) String appId,
-        @HeaderParam(UserAuthenticationHeaders.USER_ID) String userId,
-        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) String userToken
+        @QueryParam("ownerId") Optional<String> ownerId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) Optional<String> appIdHeader,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) Optional<String> userIdHeader,
+        @HeaderParam(UserAuthenticationHeaders.USER_TOKEN) Optional<String> userTokenHeader
     ) {
 
-        final File file = fileDao.findByNameAndOwner(fileName, appId, userId);
-        final boolean isOwnerAuthenticated = ownerId.equals(userId);
+        if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
+            return StashResponse.forbidden("App authorization failed.");
+        }
+
+        final String fileOwnerId;
+        fileOwnerId = ownerId.orElse(null);
+
+        final File file = fileDao.findByNameAndOwner(fileName, appId, fileOwnerId);
+
         final boolean isFileFound = file != null;
 
-        if (!isOwnerAuthenticated || !isFileFound) { return StashResponse.forbidden(); }
+        if (!isFileFound) {
+            return StashResponse.notFound("File not found.");
+        }
+
+        if (!userRequestGuard.isRequestAuthorized(userIdHeader, ownerId.orElse(null)) ) {
+            return StashResponse.forbidden("User authorization failed.");
+        }
 
         try {
             final java.nio.file.Path path = Paths.get(file.getFilePath() + file.getFileName());
@@ -166,14 +205,13 @@ public class FileResource {
 
     private boolean isOwnerAuthenticated(
         File file,
-        String userId,
-        String userToken
+        Optional<String> userId,
+        Optional<String> userToken
     ) {
-        if (userId == null || userToken == null) {
-            return false;
-        } else {
-            return stashTokenStore.isValid(userToken, userId) && file.getFileOwnerId().equals(userId);
-        }
+        return userId.isPresent() &&
+            userToken.isPresent() &&
+            stashTokenStore.isValid(userToken.get(), userId.get()) &&
+            file.getFileOwnerId().equals(userId.get());
     }
 
 }

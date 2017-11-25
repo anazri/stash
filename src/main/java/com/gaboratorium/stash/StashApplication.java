@@ -98,7 +98,8 @@ public class StashApplication extends Application<StashConfiguration> {
 
         final UserAuthenticationRequiredFilter userAuthenticationRequiredFilter =
             new UserAuthenticationRequiredFilter(
-                stashTokenStore
+                stashTokenStore,
+                configuration.isUserAuthenticationRequired()
             );
 
         final MasterAuthenticationRequiredFilter masterAuthenticationRequiredFilter =
@@ -118,7 +119,10 @@ public class StashApplication extends Application<StashConfiguration> {
         final UserResource userResource = new UserResource(
             mapper,
             userDao,
-            stashTokenStore
+            appDao,
+            stashTokenStore,
+            appRequestGuard,
+            userRequestGuard
         );
 
         final DocumentResource documentResource = new DocumentResource(
@@ -132,7 +136,9 @@ public class StashApplication extends Application<StashConfiguration> {
         final FileResource fileResource = new FileResource(
             mapper,
             fileDao,
-            stashTokenStore
+            stashTokenStore,
+            appRequestGuard,
+            userRequestGuard
         );
 
         final DashboardResource dashboardResource = new DashboardResource(

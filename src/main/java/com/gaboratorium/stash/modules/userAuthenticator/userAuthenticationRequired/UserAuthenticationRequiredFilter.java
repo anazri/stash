@@ -15,22 +15,26 @@ import java.io.IOException;
 public class UserAuthenticationRequiredFilter implements ContainerRequestFilter {
 
     private final StashTokenStore stashTokenStore;
+    private final boolean isUserAuthenticationRequired;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        final String token = requestContext.getHeaderString(UserAuthenticationHeaders.USER_TOKEN);
-        final String userId = requestContext.getHeaderString(UserAuthenticationHeaders.USER_ID);
-        final boolean isParamListProvided = StringUtils.isEmpty(token) || StringUtils.isEmpty(userId);
 
-        final String errorMsg =
-            "User authentication failed because user token was either not provided, corrupted or expired.";
+        if (isUserAuthenticationRequired) {
+            final String token = requestContext.getHeaderString(UserAuthenticationHeaders.USER_TOKEN);
+            final String userId = requestContext.getHeaderString(UserAuthenticationHeaders.USER_ID);
+            final boolean isParamListProvided = StringUtils.isEmpty(token) || StringUtils.isEmpty(userId);
 
-        final boolean isMasterAuthenticated = isMasterAuthenticated(requestContext);
+            final String errorMsg =
+                "User authentication failed because user token was either not provided, corrupted or expired.";
 
-        if (isParamListProvided && !isMasterAuthenticated) {
-            requestContext.abortWith(StashResponse.forbidden(errorMsg));
-        } else if (!stashTokenStore.isValid(token, userId) && !isMasterAuthenticated) {
-            requestContext.abortWith(StashResponse.forbidden(errorMsg));
+            final boolean isMasterAuthenticated = isMasterAuthenticated(requestContext);
+
+            if (isParamListProvided && !isMasterAuthenticated) {
+                requestContext.abortWith(StashResponse.forbidden(errorMsg));
+            } else if (!stashTokenStore.isValid(token, userId) && !isMasterAuthenticated) {
+                requestContext.abortWith(StashResponse.forbidden(errorMsg));
+            }
         }
     }
 

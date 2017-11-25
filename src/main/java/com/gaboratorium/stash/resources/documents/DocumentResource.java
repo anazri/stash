@@ -90,12 +90,18 @@ public class DocumentResource {
     }
 
     @GET
-    @Path("/apps/{appId}/documents/{documentId}")
+    @Path("/{appId}/documents/{documentId}")
     @AppAuthenticationRequired
     public Response getDocumentById(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @NotNull @PathParam("documentId") String documentId
+        @NotNull @PathParam("appId") final String appId,
+        @NotNull @PathParam("documentId") final String documentId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader
     ) {
+
+        if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        }
+
         final Document document = documentDao.findById(documentId, appId);
         final boolean isDocumentNotFound = document == null;
 
@@ -105,15 +111,20 @@ public class DocumentResource {
     }
 
     @GET
-    @Path("/apps/{appId}/documents")
+    @Path("/{appId}/documents")
     @AppAuthenticationRequired
     public Response queryDocument(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @NotNull @QueryParam("key") String key,
-        @NotNull @QueryParam("value") String value,
-        @QueryParam("keySecondary") String keySecondary,
-        @QueryParam("valueSecondary") String valueSecondary
+        @NotNull @PathParam("appId") final String appId,
+        @NotNull @QueryParam("key") final String key,
+        @NotNull @QueryParam("value") final String value,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader,
+        @QueryParam("keySecondary") final String keySecondary,
+        @QueryParam("valueSecondary") final String valueSecondary
     ) {
+
+        if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
+            return StashResponse.forbidden();
+        }
 
         final boolean isSecondaryKeyValuePairProvided = keySecondary != null && valueSecondary != null;
 
@@ -128,26 +139,27 @@ public class DocumentResource {
             StashResponse.ok(documents);
     }
 
-    // TODO: this replaces the object. Probably a mapping should be made, where new properties are added
-    // and existing properties are updated
-
     @PUT
     @AppAuthenticationRequired
     @UserAuthenticationRequired
-    @Path("/apps/{appId}/documents/{documentId}")
+    @Path("/{appId}/documents/{documentId}")
     public Response updateDocument(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @NotNull @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
-        @NotNull @PathParam("documentId") String documentId,
-        @NotNull @Valid UpdateDocumentRequestBody body
+        @NotNull @PathParam("appId") final String appId,
+        @NotNull @PathParam("documentId") final String documentId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) final Optional<String> userIdHeader,
+        @NotNull @Valid final UpdateDocumentRequestBody body
     ) throws SQLException, JsonProcessingException {
+
+        if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
+            return StashResponse.forbidden("App is not authorized");
+        }
 
         final Document document = documentDao.findById(documentId, appId);
         final boolean isDocumentNotFound = document == null;
-        final boolean isUserTheOwner = userId.equals(document.getDocumentOwnerId());
 
-        if (isDocumentNotFound || !isUserTheOwner) {
-            return StashResponse.forbidden();
+        if (isDocumentNotFound || !userRequestGuard.isRequestAuthorized(userIdHeader, document.getDocumentOwnerId())) {
+            return StashResponse.forbidden("This user have no rights to update requested document.");
         }
 
         final Document updatedDocument = documentDao.update(
@@ -158,23 +170,31 @@ public class DocumentResource {
         return StashResponse.ok(updatedDocument);
     }
 
-    // TODO: add AND app_id = :appId to all Daos
 
     @DELETE
-    @Path("/apps/{appId}/documents/{documentId}")
+    @Path("/{appId}/documents/{documentId}")
     @AppAuthenticationRequired
     @UserAuthenticationRequired
     public Response deleteDocument(
-        @NotNull @HeaderParam(AppAuthenticationHeaders.APP_ID) final String appId,
-        @NotNull @HeaderParam(UserAuthenticationHeaders.USER_ID) final String userId,
+        @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader,
+        @HeaderParam(UserAuthenticationHeaders.USER_ID) final Optional<String> userIdHeader,
+        @NotNull @PathParam("appId") final String appId,
         @NotNull @PathParam("documentId") String documentId
     ) {
+
+        if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
+            return StashResponse.forbidden("App authorization failed");
+        }
+
         final Document document = documentDao.findById(documentId, appId);
         final boolean isDocumentNotFound = document == null;
-        final boolean isUserTheOwner = userId.equals(document.getDocumentOwnerId());
 
-        if (isDocumentNotFound || !isUserTheOwner) {
-            return StashResponse.forbidden();
+        if (isDocumentNotFound) {
+            return StashResponse.notFound();
+        }
+
+        if (!userRequestGuard.isRequestAuthorized(userIdHeader, document.getDocumentOwnerId())) {
+            return StashResponse.forbidden("User authorization failed.");
         }
 
         documentDao.delete(

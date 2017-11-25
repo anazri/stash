@@ -79,7 +79,11 @@ public class AppResource {
             return StashResponse.forbidden();
         } else {
             final App app = appDao.findById(appId);
-            return StashResponse.ok(app);
+            if (app == null) {
+                return StashResponse.notFound();
+            } else {
+                return StashResponse.ok(app);
+            }
         }
     }
 
