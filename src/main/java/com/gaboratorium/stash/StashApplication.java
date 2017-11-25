@@ -31,14 +31,18 @@ import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.skife.jdbi.v2.DBI;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class StashApplication extends Application<StashConfiguration> {
@@ -65,7 +69,19 @@ public class StashApplication extends Application<StashConfiguration> {
     @Override
     public void run(StashConfiguration configuration, Environment environment) throws Exception {
 
+        // Enable CORS headers
+        final FilterRegistration.Dynamic cors =
+            environment.servlets().addFilter("CORS", CrossOriginFilter.class);
 
+        // Configure CORS parameters
+        cors.setInitParameter("allowedOrigins", "*");
+        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+        cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+
+        // Add URL mapping
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
+        // Create database if not exists
         createStashDb(configuration);
 
         // Database

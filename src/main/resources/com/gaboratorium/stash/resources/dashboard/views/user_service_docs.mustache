@@ -27,7 +27,7 @@
                         <tr class="odd">
                             <td><a href="#create-user">Create user</a></td>
                             <td>POST</td>
-                            <td><code>/users</code></td>
+                            <td><code>apps/{appId}/users</code></td>
                             <td>Yes</td>
                             <td>No</td>
                         </tr>
@@ -41,21 +41,21 @@
                         <tr class="odd">
                             <td><a href="#get-user">Get user</a></td>
                             <td>GET</td>
-                            <td><code>/users/{:userId}</code></td>
+                            <td><code>apps/{appId}/users/{:userId}</code></td>
                             <td>Yes</td>
                             <td>No</td>
                         </tr>
                         <tr class="even">
                             <td><a href="#update-user">Update user</a></td>
                             <td>PUT</td>
-                            <td><code>/apps/{:userId}</code></td>
+                            <td><code>/apps/{appId}/users/{:userId}</code></td>
                             <td>Yes</td>
                             <td>Yes</td>
                         </tr>
                         <tr class="odd">
                             <td><a href="#delete-user">Delete user</a></td>
                             <td>DELETE</td>
-                            <td><code>/apps/{:userId}</code></td>
+                            <td><code>apps/{appId}/users/{:userId}</code></td>
                             <td>Yes</td>
                             <td>Yes</td>
                         </tr>
@@ -63,9 +63,9 @@
                     </table>
                     <h3 id="create-user">Create user</h3>
                     <ul>
-                        <li>Call: POST <code>/users</code></li>
+                        <li>Call: POST <code>apps/{appId}/users</code></li>
                         <li>Registers a new user</li>
-                        <li>App Authentication is required</li>
+                        <li>App Authentication is required if it is set in the configuration file</li>
                         <li>User ID and User e-mail cannot be taken</li>
                     </ul>
                     <h4 id="request-body">Request body</h4>
@@ -96,7 +96,7 @@
                         <tr class="even">
                             <td><code>userEmailSecondary</code></td>
                             <td>String</td>
-                            <td>true</td>
+                            <td>false</td>
                         </tr>
                         <tr class="odd">
                             <td><code>userFirstName</code></td>
@@ -145,6 +145,32 @@
                         </tr>
                         </tbody>
                     </table>
+
+                    <h4>Example code in jQuery</h4>
+
+                    <pre>
+                        <code>
+    $("#registerForm").on("submit", function(e) {
+        e.preventDefault();
+        var body = {
+                "userId": $("#registerForm__id").val(),
+                "userEmail": $("#registerForm__email").val(),
+                "userPasswordHash": $("#registerForm__passwordHash").val()
+            }
+
+        $.ajax(
+            "http://localhost:8080/apps/myApplication/users",
+            {
+                type: "POST",
+                async: "false",
+                contentType: "application/json",
+                data: JSON.stringify(body)
+            }
+        );
+    })
+                        </code>
+                    </pre>
+
                     <h3 id="authenticate-user">Authenticate user</h3>
                     <ul>
                         <li>Call: POST <code>/users/authenticate</code></li>
