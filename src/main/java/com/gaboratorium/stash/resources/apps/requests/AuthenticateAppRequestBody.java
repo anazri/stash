@@ -10,8 +10,5 @@ import javax.validation.constraints.NotNull;
 public class AuthenticateAppRequestBody {
 
     @JsonProperty @NotNull @Getter
-    public String appId;
-
-    @JsonProperty @NotNull @Getter
     public String appSecret;
 }

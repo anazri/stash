@@ -78,15 +78,20 @@ public class StashApplication extends Application<StashConfiguration> {
         cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
         cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
 
-        // Add URL mapping
-        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
-
         // Create database if not exists
         createStashDb(configuration);
 
         // Database
         final DataSourceFactory dataSourceFactory = configuration.getDatabase();
         final DBI dbi = getDBI(environment, dataSourceFactory);
+
+        // Daos
+        final AppDao appDao = dbi.onDemand(AppDao.class);
+        final MasterDao masterDao = dbi.onDemand(MasterDao.class);
+        final UserDao userDao = dbi.onDemand(UserDao.class);
+        final DocumentDao documentDao = dbi.onDemand(DocumentDao.class);
+        final FileDao fileDao = dbi.onDemand(FileDao.class);
+        final RequestLogDao requestLogDao = dbi.onDemand(RequestLogDao.class);
 
         // Modules
         final StashTokenStore stashTokenStore = new StashTokenStore(
@@ -104,13 +109,9 @@ public class StashApplication extends Application<StashConfiguration> {
             configuration.isUserAuthenticationRequired()
         );
 
-        // Daos
-        final AppDao appDao = dbi.onDemand(AppDao.class);
-        final MasterDao masterDao = dbi.onDemand(MasterDao.class);
-        final UserDao userDao = dbi.onDemand(UserDao.class);
-        final DocumentDao documentDao = dbi.onDemand(DocumentDao.class);
-        final FileDao fileDao = dbi.onDemand(FileDao.class);
-        final RequestLogDao requestLogDao = dbi.onDemand(RequestLogDao.class);
+        // Add URL mapping
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
 
         // Filters
         final AppAuthenticationRequiredFilter appAuthenticationRequiredFilter =

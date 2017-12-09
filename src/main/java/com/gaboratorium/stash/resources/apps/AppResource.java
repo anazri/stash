@@ -104,12 +104,13 @@ public class AppResource {
     }
 
     @POST
-    @Path("/authenticate")
+    @Path("/{appId}/authenticate")
     public Response authenticateApp(
+        @NotNull @PathParam("appId") final String appId,
         @NotNull @Valid final AuthenticateAppRequestBody body
     ) {
 
-        final App app = appDao.findById(body.getAppId());
+        final App app = appDao.findById(appId);
 
         final boolean isAppNotFound = app == null;
 
