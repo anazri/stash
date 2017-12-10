@@ -26,7 +26,6 @@
         </createTable>
 
         <!-- Masters -->
-
         <createTable tableName="masters" schemaName="stash">
             <column name="id" type="varchar(256)">
                 <constraints primaryKey="true" nullable="false"/>

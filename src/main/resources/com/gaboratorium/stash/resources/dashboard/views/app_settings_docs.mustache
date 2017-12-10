@@ -17,7 +17,7 @@
                         <tr class="header">
                             <th>Action</th>
                             <th>Method</th>
-                            <th>URL</th>
+                            <th>URI</th>
                             <th>App auth required</th>
                         </tr>
                         </thead>
@@ -31,19 +31,19 @@
                         <tr class="even">
                             <td><a href="#authenticate-application">Auth application</a></td>
                             <td>POST</td>
-                            <td><code>/apps/authenticate</code></td>
+                            <td><code>/apps/{appId}/authenticate</code></td>
                             <td>No</td>
                         </tr>
                         <tr class="odd">
                             <td><a href="#get-application">Get application</a></td>
                             <td>GET</td>
-                            <td><code>/apps</code></td>
+                            <td><code>/apps/{appId}</code></td>
                             <td>Yes</td>
                         </tr>
                         <tr class="even">
                             <td><a href="#delete-application">Delete application</a></td>
                             <td>DELETE</td>
-                            <td><code>/apps</code></td>
+                            <td><code>/apps/{appId}</code></td>
                             <td>Yes</td>
                         </tr>
                         </tbody>
@@ -52,7 +52,6 @@
                     <ul>
                         <li>Call: POST <code>/apps</code></li>
                         <li>Creates a Stash Backend App</li>
-                        <li>This endpoint can be closed within the configuration file</li>
                         <li><code>appId</code> is used to identify the app and to log in to Dashboard</li>
                         <li><code>masterEmail</code> is used to log in to Dashboard and authenticate a Master</li>
                         <li><code>masterPasswordHash</code> is used to log in to Dashboard and authenticate a Master</li>
@@ -101,7 +100,7 @@
                     </table>
                     <h3 id="authenticate-application">Authenticate application</h3>
                     <ul>
-                        <li>Call: POST <code>/apps/authenticate</code></li>
+                        <li>Call: POST <code>/apps/{appId}/authenticate</code></li>
                         <li>Returns an App Authentication Token</li>
                         <li>Use this token alongside with your <code>appId</code> to authenticate your App calls</li>
                     </ul>
@@ -121,11 +120,6 @@
                         </thead>
                         <tbody>
                         <tr class="odd">
-                            <td><code>appId</code></td>
-                            <td>String</td>
-                            <td>true</td>
-                        </tr>
-                        <tr class="even">
                             <td><code>appSecret</code></td>
                             <td>String</td>
                             <td>true</td>
@@ -134,13 +128,13 @@
                     </table>
                     <h3 id="get-application">Get application</h3>
                     <ul>
-                        <li>Call: GET <code>/apps</code></li>
+                        <li>Call: GET <code>/apps/{appId}</code></li>
                         <li>App Authentication required</li>
-                        <li>Returns authenticated app object</li>
+                        <li>Returns app representation</li>
                     </ul>
                     <h3 id="delete-application">Delete application</h3>
                     <ul>
-                        <li>Call: DELETE <code>/apps</code></li>
+                        <li>Call: DELETE <code>/apps/{appId}</code></li>
                         <li>App Authentication required</li>
                         <li>Deletes authenticated app</li>
                     </ul>
