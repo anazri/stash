@@ -196,26 +196,27 @@ public class UserResource {
     }
 
     @POST
-    @Path("/{appId}/users/authenticate")
+    @Path("/{appId}/users/{userId}/authenticate")
     @AppAuthenticationRequired
     public Response authenticateUser(
         @NotNull @PathParam("appId") final String appId,
+        @NotNull @PathParam("userId") final String userId,
         @NotNull @Valid final AuthenticateUserRequestBody body,
         @HeaderParam(AppAuthenticationHeaders.APP_ID) final Optional<String> appIdHeader
     ) {
 
         if (!appRequestGuard.isRequestAuthorized(appIdHeader, appId)) {
-            return StashResponse.forbidden("By me?");
+            return StashResponse.forbidden("App is not authorized to perform this action");
         }
 
-        final User user = userDao.findByUserCredentials(body.getUserId(), body.getUserPasswordHash(), appId);
+        final User user = userDao.findByUserCredentials(userId, body.getUserPasswordHash(), appId);
         final boolean isUserNotFound = user == null;
 
         if (isUserNotFound) {
             return StashResponse.forbidden("User does not exist or wrong credentials");
         }
 
-        final String token = stashTokenStore.create(body.userId, stashTokenStore.getUserAuthTokenExpiryTime());
+        final String token = stashTokenStore.create(userId, stashTokenStore.getUserAuthTokenExpiryTime());
         return StashResponse.ok(token);
     }
 

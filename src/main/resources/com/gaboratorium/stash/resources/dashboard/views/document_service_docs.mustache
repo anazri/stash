@@ -27,35 +27,35 @@
                         <tr class="odd">
                             <td><a href="#create-document">Create document</a></td>
                             <td>POST</td>
-                            <td><code>/documents</code></td>
+                            <td><code>apps/{appId}/documents</code></td>
                             <td>Yes</td>
                             <td>No</td>
                         </tr>
                         <tr class="even">
                             <td><a href="#get-document">Get document</a></td>
                             <td>GET</td>
-                            <td><code>/documents/{documentId}</code></td>
+                            <td><code>apps/{appId}/documents/{documentId}</code></td>
                             <td>Yes</td>
                             <td>No</td>
                         </tr>
                         <tr class="odd">
                             <td><a href="#query-document">Query document</a></td>
                             <td>GET</td>
-                            <td><code>/documents?key={key}&amp;value={value}</code></td>
+                            <td><code>apps/{appId}/documents?key={key}&amp;value={value}</code></td>
                             <td>Yes</td>
                             <td>No</td>
                         </tr>
                         <tr class="even">
                             <td><a href="#update-document">Update document</a></td>
                             <td>PUT</td>
-                            <td><code>/documents/{:documentId}</code></td>
+                            <td><code>apps/{appId}/documents/{:documentId}</code></td>
                             <td>Yes</td>
                             <td>Yes</td>
                         </tr>
                         <tr class="odd">
                             <td><a href="#delete-document">Delete document</a></td>
                             <td>DELETE</td>
-                            <td><code>/documents/{:documentId}</code></td>
+                            <td><code>apps/{appId}/documents/{:documentId}</code></td>
                             <td>Yes</td>
                             <td>Yes</td>
                         </tr>
@@ -63,7 +63,7 @@
                     </table>
                     <h3 id="create-document">Create document</h3>
                     <ul>
-                        <li>Call: POST <code>/documents</code></li>
+                        <li>Call: POST <code>apps/{appId}/documents</code></li>
                         <li>App Authentication is required</li>
                         <li>User Authentication is required <strong>if</strong> <code>documentOwnerId</code> is provided</li>
                     </ul>
@@ -89,21 +89,47 @@
                         </tr>
                         </tbody>
                     </table>
+
+                    <h4>Example code in jQuery</h4>
+                    <pre>
+                        <code>
+
+$("#commentForm").on("submit", function(e) {
+    e.preventDefault();
+    var body = {
+        "documentContent": {
+            "userComment": $("#commentForm__comment").val()
+        }
+    }
+
+    $.ajax(
+        "http://localhost:8080/apps/{myApp}/documents",
+        {
+            type: "POST",
+            async: "false",
+            contentType: "application/json",
+            data: JSON.stringify(body)
+        }
+    );
+})
+                        </code>
+                    </pre>
+
                     <h3 id="get-document">Get document</h3>
                     <ul>
-                        <li>Call: GET <code>/documents/{documentId}</code></li>
+                        <li>Call: GET <code>apps/{appId}/documents/{documentId}</code></li>
                         <li>App Authentication required</li>
                         <li>Returns json document</li>
                     </ul>
                     <h3 id="query-document">Query document</h3>
                     <ul>
-                        <li>Call: GET <code>/documents?key={key}&amp;value={value}&amp;keySecondary={keySecondary}&amp;valueSecondary={valueSecondary}</code></li>
+                        <li>Call: GET <code>apps/{appId}/documents?key={key}&amp;value={value}&amp;keySecondary={keySecondary}&amp;valueSecondary={valueSecondary}</code></li>
                         <li>App Authentication required</li>
                         <li>If document has an owner ID then owner ID and Authenticated User ID have to match</li>
                     </ul>
                     <h3 id="update-document">Update document</h3>
                     <ul>
-                        <li>Call: PUT <code>/documents/{documentId}</code></li>
+                        <li>Call: PUT <code>apps/{appId}/documents/{documentId}</code></li>
                         <li>App Authentication required</li>
                         <li>User Authentication required</li>
                         <li>Owner ID and Authenticated User ID have to match</li>
@@ -131,7 +157,7 @@
                     </table>
                     <h3 id="delete-document">Delete document</h3>
                     <ul>
-                        <li>Call: DELETE <code>/documents/{documentId}</code></li>
+                        <li>Call: DELETE <code>apps/{appId}/documents/{documentId}</code></li>
                         <li>App Authentication required</li>
                         <li>User Authentication required</li>
                         <li>Owner ID and Authenticated User ID have to match</li>

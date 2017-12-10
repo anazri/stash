@@ -34,28 +34,28 @@
                         <tr class="even">
                             <td><a href="#authenticate-user">Auth user</a></td>
                             <td>POST</td>
-                            <td><code>/users/authenticate</code></td>
+                            <td><code>apps/{appId}/users/{userId}/authenticate</code></td>
                             <td>Yes</td>
                             <td>No</td>
                         </tr>
                         <tr class="odd">
                             <td><a href="#get-user">Get user</a></td>
                             <td>GET</td>
-                            <td><code>apps/{appId}/users/{:userId}</code></td>
+                            <td><code>apps/{appId}/users/{userId}</code></td>
                             <td>Yes</td>
                             <td>No</td>
                         </tr>
                         <tr class="even">
                             <td><a href="#update-user">Update user</a></td>
                             <td>PUT</td>
-                            <td><code>/apps/{appId}/users/{:userId}</code></td>
+                            <td><code>/apps/{appId}/users/{userId}</code></td>
                             <td>Yes</td>
                             <td>Yes</td>
                         </tr>
                         <tr class="odd">
                             <td><a href="#delete-user">Delete user</a></td>
                             <td>DELETE</td>
-                            <td><code>apps/{appId}/users/{:userId}</code></td>
+                            <td><code>apps/{appId}/users/{userId}</code></td>
                             <td>Yes</td>
                             <td>Yes</td>
                         </tr>
@@ -65,7 +65,7 @@
                     <ul>
                         <li>Call: POST <code>apps/{appId}/users</code></li>
                         <li>Registers a new user</li>
-                        <li>App Authentication is required if it is set in the configuration file</li>
+                        <li>App Authentication is required</li>
                         <li>User ID and User e-mail cannot be taken</li>
                     </ul>
                     <h4 id="request-body">Request body</h4>
@@ -173,7 +173,7 @@
 
                     <h3 id="authenticate-user">Authenticate user</h3>
                     <ul>
-                        <li>Call: POST <code>/users/authenticate</code></li>
+                        <li>Call: POST <code>apps/{appId}/users/{userId}/authenticate</code></li>
                         <li>App Authentication required</li>
                         <li>Returns a User Authentication Token</li>
                     </ul>
@@ -188,12 +188,7 @@
                         </thead>
                         <tbody>
                         <tr class="odd">
-                            <td><code>appId</code></td>
-                            <td>String</td>
-                            <td>true</td>
-                        </tr>
-                        <tr class="even">
-                            <td><code>appSecret</code></td>
+                            <td><code>userPasswordHash</code></td>
                             <td>String</td>
                             <td>true</td>
                         </tr>
@@ -201,13 +196,13 @@
                     </table>
                     <h3 id="get-user">Get user</h3>
                     <ul>
-                        <li>Call: GET <code>/users/{userId}</code></li>
+                        <li>Call: GET <code>apps/{appId}/users/{userId}</code></li>
                         <li>App Authentication required</li>
                         <li>Returns a registered user</li>
                     </ul>
                     <h3 id="update-user">Update user</h3>
                     <ul>
-                        <li>Call: PUT <code>/users/{userId}</code></li>
+                        <li>Call: PUT <code>apps/{appId}/users/{userId}</code></li>
                         <li>App Authentication required</li>
                         <li>User Authentication required</li>
                     </ul>
@@ -274,7 +269,7 @@
                         <tr class="even">
                             <td><code>userCity</code></td>
                             <td>String</td>
-                            <td>fals</td>
+                            <td>false</td>
                         </tr>
                         </tbody>
                     </table>

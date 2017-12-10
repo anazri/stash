@@ -10,8 +10,5 @@ import javax.validation.constraints.NotNull;
 public class AuthenticateUserRequestBody {
 
     @JsonProperty @NotNull @Getter
-    public String userId;
-
-    @JsonProperty @NotNull @Getter
     public String userPasswordHash;
 }
