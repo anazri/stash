@@ -79,7 +79,7 @@
                     <h4>Example code in HTML</h4>
                     <pre>
                         <code>
-&lt;form method="POST" action="http://localhost:8080/apps/instagram/files" enctype="multipart/form-data"&gt;
+&lt;form method="POST" action="http://localhost:8080/apps/{myAppId}/files" enctype="multipart/form-data"&gt;
     &lt;input type="file" name="file"&gt;
     &lt;input type="submit" value="Upload"&gt;
 &lt;/form&gt;
@@ -97,6 +97,12 @@
                         <li>App Authentication required</li>
                         <li>Authenticated User ID and owner ID have to match if owner ID is provided</li>
                     </ul>
+                    <h4>Example code in HTML</h4>
+                    <pre>
+                        <code>
+&lt;img src="http://localhost:8080/apps/{myAppId}/files/{myFileId}"&gt
+                        </code>
+                    </pre>
                 </section>
 
             </div>
