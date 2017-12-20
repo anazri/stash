@@ -34,7 +34,6 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.skife.jdbi.v2.DBI;
-
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import java.sql.Connection;
@@ -69,7 +68,7 @@ public class StashApplication extends Application<StashConfiguration> {
     @Override
     public void run(StashConfiguration configuration, Environment environment) throws Exception {
 
-        // Enable CORS headers
+        // Enable CORS headers®
         final FilterRegistration.Dynamic cors =
             environment.servlets().addFilter("CORS", CrossOriginFilter.class);
 

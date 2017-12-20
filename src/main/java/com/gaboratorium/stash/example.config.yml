@@ -1,8 +1,11 @@
 applicationName: Stash Backend
 isAppCreationOpen: true
 appsTokenStoreKey: verySecretTokenKeyForAppsTokenStore
+masterAuthTokenExpiryTimeInMinutes: 30
+appAuthTokenExpiryTimeInMinutes: 30
+userAuthTokenExpiryTimeInMinutes: 30
 database:
-  url: jdbc:postgresql://localhost:5432/yourdb
+  url: jdbc:postgresql://localhost:5432/
   user: yourUser
   password: yourPassword
   minSize: 8
